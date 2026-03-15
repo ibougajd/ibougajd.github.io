@@ -1,0 +1,83 @@
+/* Terminal Animation Styles */
+.terminal-loader {
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 500px;
+    margin: 40px auto 0;
+    overflow: hidden;
+    text-align: left;
+    font-family: 'Courier New', Courier, monospace;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out forwards 1.2s;
+}
+
+.terminal-header {
+    background-color: #161b22;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #30363d;
+}
+
+.terminal-title {
+    color: #8b949e;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.terminal-controls {
+    display: flex;
+    gap: 6px;
+}
+
+.control {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.control.close {
+    background-color: #ff5f56;
+}
+
+.control.minimize {
+    background-color: #ffbd2e;
+}
+
+.control.maximize {
+    background-color: #27c93f;
+}
+
+.text-body {
+    padding: 15px;
+    height: 220px;
+    overflow-y: auto;
+}
+
+.console-text {
+    color: #5af78e;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.console-text::after {
+    content: '_';
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}

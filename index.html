@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ilyass</title>
+    <link rel="stylesheet" href="portfolio.css?v=2">
+    <link rel="stylesheet" href="terminal.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+
+<body>
+    <canvas id="bg-canvas"></canvas>
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" data-cursor-dot></div>
+    <div class="cursor-outline" data-cursor-outline></div>
+
+    <!-- Fixed Brand Logo -->
+    <a href="#" class="fixed-logo" aria-label="Ilyass Bougajdi">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="4.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <!-- Stylized I -->
+            <line x1="14" y1="12" x2="14" y2="48"></line>
+            <!-- Stylized B -->
+            <path d="M26 12h10a10 10 0 0 1 0 20h-8"></path>
+            <path d="M28 32h10a9 9 0 0 1 0 18h-11v-20"></path> <!-- Connected spine logic -->
+        </svg>
+        <span class="logo-text">Ilyass Bougajdi</span>
+    </a>
+
+    </a>
+
+    <!-- Fixed Theme Toggle -->
+    <button id="theme-toggle" aria-label="Toggle Dark Mode" class="fixed-theme-toggle">
+        <!-- Sun Icon -->
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <!-- Moon Icon -->
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <!-- Floating Dock Navigation -->
+    <nav class="dock-nav">
+        <ul class="dock-links">
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Work</a></li>
+        </ul>
+        <div class="dock-divider"></div>
+        <div class="dock-actions">
+            <a href="#contact" class="dock-cta">Contact</a>
+        </div>
+    </nav>
+
+    <header id="home" class="hero">
+        <div class="hero-content">
+            <p class="greeting">Hello, I'm</p>
+            <h1 class="glitch-text" data-text="Ilyass">Ilyass</h1>
+            <h2 class="subtitle">DevOps Engineer</h2>
+            <p class="tagline">Automating infrastructure, ensuring reliability, and building scalable systems.</p>
+            <a href="#projects" class="cta-button">View Work</a>
+            <div class="terminal-loader">
+                <div class="terminal-header">
+                    <div class="terminal-title">ilyass@devops:~</div>
+                    <div class="terminal-controls">
+                        <div class="control close"></div>
+                        <div class="control minimize"></div>
+                        <div class="control maximize"></div>
+                    </div>
+                </div>
+                <div class="text-body">
+                    <div id="typewriter-text" class="console-text"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title">01. About Me</h2>
+            <div class="about-grid">
+                <div class="about-text">
+                    <p>
+                        Hello! I'm <strong>Ilyass</strong>, a DevOps Engineer who bridges the gap between complex
+                        development challenges and reliable operational systems. My background in
+                        <strong>low-level C programming</strong> at 1337 (42 Network) gave me a deep
+                        understanding of memory management and system internals, which I now apply to building
+                        <strong>resilient cloud infrastructure</strong>.
+                    </p>
+                    <p>
+                        I don't just maintain servers; I <strong>automate ecosystems</strong>. Whether it's
+                        containerizing applications with Docker, orchestrating clusters with Kubernetes, or
+                        building rigorous CI/CD pipelines, my goal is always the same: <span
+                            class="highlight">Efficiency, Security, and Scalability.</span>
+                    </p>
+                    <div class="about-tags">
+                        <span class="tag">#ProblemSolver</span>
+                        <span class="tag">#AutomationFirst</span>
+                        <span class="tag">#LinuxNative</span>
+                    </div>
+                </div>
+                <div class="about-terminal-wrapper">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="terminal-title">user_profile.json</span>
+                    </div>
+                    <div class="terminal-body" id="json-profile">
+                        <!-- Content will be syntax highlighted via CSS -->
+                        <pre><code><span class="key">"name"</span>: <span class="string">"Ilyass Bougajdi"</span>,
+    <span class="key">"role"</span>: <span class="string">"DevOps Engineer"</span>,
+    <span class="key">"status"</span>: <span class="string">"Open to Opportunities"</span>,
+    <span class="key">"fuel"</span>: <span class="string">"Coffee & Code"</span>,
+    <span class="key">"focus"</span>: [
+      <span class="string">"Infrastructure-as-Code"</span>,
+      <span class="string">"Cloud Native"</span>,
+      <span class="string">"Performance Tuning"</span>
+    ]</code></pre>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <section id="skills" class="section">
+        <div class="container">
+            <h2 class="section-title">02. Technologies</h2>
+            <div class="skills-wrapper">
+                <div class="skill-category">
+                    <h3>Core</h3>
+                    <div class="skill-list">
+                        <span>C / C++</span>
+                        <span>Rust</span>
+                        <span>Python</span>
+                        <span>TypeScript</span>
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <h3>DevOps & Systems</h3>
+                    <div class="skill-list">
+                        <span>Docker</span>
+                        <span>Kubernetes</span>
+                        <span>Nginx</span>
+                        <span>Linux / Bash</span>
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <h3>Web</h3>
+                    <div class="skill-list">
+                        <span>React / Next.js</span>
+                        <span>Three.js</span>
+                        <span>Node.js</span>
+                        <span>NestJS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="section">
+        <div class="container">
+            <h2 class="section-title">03. Featured Projects</h2>
+            <div class="projects-grid container-registry">
+                <!-- Service 1: Inception -->
+                <article class="service-card">
+                    <div class="service-header">
+                        <span class="status-indicator"></span>
+                        <h3 class="service-name">container/inception</h3>
+                    </div>
+                    <div class="service-body">
+                        <div class="code-block">
+                            <span class="key">stack:</span> <span class="value">[Docker, Nginx, WordPress]</span><br>
+                            <span class="key">role:</span> <span class="value">"System Admin"</span><br>
+                            <span class="key">uptime:</span> <span class="value">99.9%</span><br>
+                            <span class="key">security:</span> <span class="value">"Strict"</span>
+                        </div>
+                        <p class="service-desc">
+                            Infrastructure setup with Docker Compose, handling orchestrated containers and volume
+                            management.
+                        </p>
+                    </div>
+                    <div class="service-footer">
+                        <a href="#" class="cmd-btn">
+                            <span class="prompt">$></span> git clone
+                        </a>
+                        <a href="#" class="cmd-btn">
+                            <span class="prompt">$></span> inspect
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Service 2: ft_transcendence -->
+                <article class="service-card">
+                    <div class="service-header">
+                        <span class="status-indicator"></span>
+                        <h3 class="service-name">app/transcendence</h3>
+                    </div>
+                    <div class="service-body">
+                        <div class="code-block">
+                            <span class="key">stack:</span> <span class="value">[NestJS, React, Postgres]</span><br>
+                            <span class="key">type:</span> <span class="value">"Full Stack"</span><br>
+                            <span class="key">features:</span> <span class="value">[Real-time, OAuth]</span><br>
+                            <span class="key">deploy:</span> <span class="value">"Dockerized"</span>
+                        </div>
+                        <p class="service-desc">
+                            Multiplayer Pong game with live chat and matchmaking system.
+                        </p>
+                    </div>
+                    <div class="service-footer">
+                        <a href="#" class="cmd-btn">
+                            <span class="prompt">$></span> git clone
+                        </a>
+                        <a href="#" class="cmd-btn">
+                            <span class="prompt">$></span> open :3000
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Service 3: Minishell -->
+                <article class="service-card">
+                    <div class="service-header">
+                        <span class="status-indicator warning"></span>
+                        <h3 class="service-name">bin/minishell</h3>
+                    </div>
+                    <div class="service-body">
+                        <div class="code-block">
+                            <span class="key">lang:</span> <span class="value">"C"</span><br>
+                            <span class="key">sys_calls:</span> <span class="value">[fork, execve, pipe]</span><br>
+                            <span class="key">signals:</span> <span class="value">"Handled"</span><br>
+                            <span class="key">version:</span> <span class="value">"1.0.0"</span>
+                        </div>
+                        <p class="service-desc">
+                            Custom Bash-like shell implementation. Manages processes and file descriptors.
+                        </p>
+                    </div>
+                    <div class="service-footer">
+                        <a href="#" class="cmd-btn">
+                            <span class="prompt">$></span> make
+                        </a>
+                        <a href="#" class="cmd-btn">
+                            <span class="prompt">$></span> ./minishell
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="padding-bottom: 0;">
+        <div class="container">
+            <h2 class="section-title" style="justify-content: center;">03.5. Infrastructure Map</h2>
+            <p style="color: var(--text-secondary); text-align: center; max-width: 600px; margin: 0 auto 20px auto;">
+                A live 3D visualization of my deployed services and their orchestration.
+            </p>
+        </div>
+    </section>
+
+    <section id="devops-visual" style="position: relative; height: 500px; width: 100%; overflow: hidden;">
+        <div id="three-container" style="width: 100%; height: 100%;"></div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <section id="contact" class="section">
+        <div class="container contact-container">
+            <h2 class="section-title">04. Get In Touch</h2>
+            <p class="contact-text">Currently looking for new opportunities. Whether you have a question or just want to
+                say hi, I'll try my best to get back to you!</p>
+            <a href="mailto:ilyass@student.1337.ma" class="cta-button">Say Hello</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="social-icons">
+            <a href="https://github.com" target="_blank" aria-label="GitHub">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                    </path>
+                </svg>
+            </a>
+            <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+            </a>
+        </div>
+        <p>Built by Ilyass &copy; 2025</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
