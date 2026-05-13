@@ -85,10 +85,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             el.addEventListener('mouseleave', () => {
                 document.body.classList.remove('hovering');
-                el.style.transform = '';
+                if (!el.closest('.social-icons')) {
+                    el.style.transform = '';
+                }
             });
 
-            if (el.classList.contains('cta-button') || el.closest('.social-icons')) {
+            if (el.classList.contains('cta-button')) {
                 el.addEventListener('mousemove', (e) => {
                     const rect = el.getBoundingClientRect();
                     const centerX = rect.left + rect.width / 2;
@@ -197,10 +199,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const animateParticles = () => {
             ctx.clearRect(0, 0, width, height);
             const isLight = document.body.classList.contains('light-mode');
+            
+            // Generate a dynamic hue based on time for the "RGB Hack" effect
+            const timeHue = (Date.now() / 30) % 360;
 
-            // Base Colors
-            const baseColor = isLight ? 'rgba(0, 86, 179, 0.4)' : 'rgba(0, 255, 136, 0.4)';
-            const baseLineColor = isLight ? 'rgba(0, 86, 179, 0.1)' : 'rgba(0, 255, 136, 0.1)';
+            // Base Colors (Dynamic HSL instead of static RGBA green)
+            const baseColor = isLight ? 'rgba(0, 86, 179, 0.4)' : `hsla(${150 + timeHue}, 100%, 50%, 0.4)`;
+            const baseLineColor = isLight ? 'rgba(0, 86, 179, 0.1)' : `hsla(${150 + timeHue}, 100%, 50%, 0.1)`;
 
             // Interaction Colors (Strong Light)
             const activeColor = isLight ? 'rgba(0, 86, 179, 1)' : 'rgba(255, 255, 255, 1)';
@@ -289,75 +294,327 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle.addEventListener('click', toggleTheme);
     }
 
-    // 7. Terminal Typewriter Effect (Infinite Loop with DevOps Commands)
+    // 7. Terminal — Auto-play + Click-to-Interact
     const terminalText = document.getElementById('typewriter-text');
-    if (terminalText) {
-        const commandSequence = [
-            { text: "$ whoami", delay: 0, outputDelay: 300 },
-            { text: "> devops_engineer", isOutput: true, delay: 1000 },
+    const terminalBody = document.getElementById('terminal-body');
+    const inputLine = document.querySelector('.terminal-input-line');
+    const terminalInput = document.getElementById('terminal-input');
+    const terminalLoader = document.getElementById('terminal-loader');
+    const terminalCloseBtn = document.getElementById('terminal-close-btn');
+    
+    if (terminalText && terminalBody && inputLine && terminalInput) {
+        let isInteractive = false;
+        let autoPlayRunning = false;
+        let autoPlayTimeout = null;
+        let cmdHistory = [];
+        let historyIdx = -1;
 
-            { text: "$ docker ps --format 'table {{.Names}}\t{{.Status}}'", delay: 300, outputDelay: 400 },
-            { text: "NAMES\t\tSTATUS\nnginx-lb\tUp 4 hours\npostgres-db\tUp 4 hours\nportfolio\tUp 2 minutes", isOutput: true, delay: 2000 },
+        // --- Command Definitions ---
+        const COMMANDS = {
+            help: () => `\n<span class="t-head">Available Commands</span>
+  <span class="t-cmd">whoami</span>       - Display user info
+  <span class="t-cmd">skills</span>       - List core technologies
+  <span class="t-cmd">projects</span>     - Show featured projects
+  <span class="t-cmd">contact</span>      - Contact information
+  <span class="t-cmd">experience</span>   - Work experience
+  <span class="t-cmd">education</span>    - Education background
+  <span class="t-cmd">docker ps</span>    - Show running containers
+  <span class="t-cmd">kubectl</span>      - Kubernetes pod status
+  <span class="t-cmd">uptime</span>       - System uptime stats
+  <span class="t-cmd">ls</span>           - List directory
+  <span class="t-cmd">cat README.md</span>- Read the readme
+  <span class="t-cmd">clear</span>        - Clear terminal
+  <span class="t-cmd">exit</span>         - Back to auto-play mode\n`,
 
-            { text: "$ terraform plan", delay: 300, outputDelay: 800 },
-            { text: "Plan: 3 to add, 0 to change, 0 to destroy.\n\nChanges to Outputs:\n  + load_balancer_ip = (known after apply)", isOutput: true, delay: 2000 },
+            whoami: () => `
+<span class="t-head">ilyass@devops</span>
+─────────────────────────────
+Name       : Ilyass Bougajdi
+Role       : DevOps Engineer
+School     : 1337 / 42 Network
+Status     : <span class="t-ok">● Open to Opportunities</span>
+Focus      : Cloud · Containers · Automation
+Motto      : "Infrastructure as Art"\n`,
 
-            { text: "$ kubectl get pods -n production", delay: 300, outputDelay: 500 },
-            { text: "NAME\t\tREADY\tSTATUS\tRESTART\nfrontend-7b\t1/1\tRunning\t0\napi-gateway-x\t1/1\tRunning\t0", isOutput: true, delay: 2000 },
+            skills: () => `
+<span class="t-head">Tech Stack</span>
+─────────────────────────────
+<span class="t-label">Languages</span>   C · C++ · Python · Go · SQL
+<span class="t-label">DevOps</span>      Docker · Kubernetes (K3s/K3d) · Helm · ArgoCD
+<span class="t-label">Cloud</span>       Oracle Cloud (OCI) · GitHub Actions
+<span class="t-label">Observe</span>     ELK Stack · Prometheus · Grafana
+<span class="t-label">Network</span>     Traefik · Nginx · TCP/IP · SOPS\n`,
 
-            { text: "$ ansible-playbook deploy.yml", delay: 300, outputDelay: 1000 },
-            { text: "[OK] Gather Facts\n[OK] Install Dependencies\n[OK] Deploy Artifacts\n[Changed] Restart Service", isOutput: true, delay: 2000 },
+            projects: () => `
+<span class="t-head">Featured Projects</span>
+─────────────────────────────
+<span class="t-ok">[1]</span> <span class="t-cmd">app/ft_transcendence</span>
+     Oracle Cloud (OCI) · Kubernetes · ArgoCD · ELK Stack
+     <span class="t-dim">→ github.com/ibougajd/transcendence</span>
 
-            { text: "$ ./status_check.sh", delay: 300, outputDelay: 300 },
-            { text: "All Systems Operational.\nUptime: 99.9% 🚀", isOutput: true, delay: 3000 },
-        ];
+<span class="t-ok">[2]</span> <span class="t-cmd">bin/ft_irc</span>
+     C++ · TCP/IP · Non-blocking I/O (poll)
+     <span class="t-dim">→ github.com/ibougajd/ft_irc</span>
 
-        const typeRecursive = async () => {
-            while (true) { // Infinite loop
-                for (const cmd of commandSequence) {
-                    // NEW: If it's a new command (starts with $), clear the terminal first.
-                    // This creates the "overwrite" effect so it doesn't expand forever.
-                    if (cmd.text.startsWith('$')) {
-                        terminalText.innerHTML = '';
-                    }
+<span class="t-ok">[3]</span> <span class="t-cmd">container/inception</span>
+     Docker Compose · Nginx · MariaDB · WordPress
+     <span class="t-dim">→ github.com/ibougajd/inception</span>\n`,
 
-                    // Create line container
-                    const div = document.createElement('div');
-                    if (cmd.isOutput) {
-                        div.style.color = '#a5d6ff'; // Output color (softer blue/white)
-                        div.style.marginBottom = '10px';
-                        div.style.lineHeight = '1.4'; // Slightly tighter for output
-                    } else {
-                        div.style.color = '#5af78e'; // Command color (Green)
-                        div.style.marginTop = '0px'; // Reset margin
-                        div.style.fontWeight = 'bold';
-                    }
-                    div.style.whiteSpace = 'pre-wrap'; // Preserve format
-                    terminalText.appendChild(div);
+            contact: () => `
+<span class="t-head">Contact</span>
+─────────────────────────────
+Email    : ilyass@student.1337.ma
+GitHub   : github.com/ibougajd
+LinkedIn : linkedin.com/in/ilyassbougajdi
+Location : Morocco\n`,
 
-                    // Type effect
-                    if (cmd.isOutput) {
-                        // Outputs appear faster
-                        div.textContent = cmd.text;
-                        await new Promise(r => setTimeout(r, cmd.delay));
-                    } else {
-                        // Commands type out char by char
-                        for (let i = 0; i < cmd.text.length; i++) {
-                            div.textContent += cmd.text[i];
-                            await new Promise(r => setTimeout(r, Math.random() * 30 + 30));
-                            // Scroll handled automatically by overwrite (always top) but good safety
-                        }
-                        // Pause before showing output
-                        await new Promise(r => setTimeout(r, cmd.outputDelay || 200));
-                    }
-                }
+            experience: () => `
+<span class="t-head">Experience</span>
+─────────────────────────────
+<span class="t-cmd">DevOps Engineer</span> — 1337 / 42 Network
+  · Built Docker-based multi-service infrastructure
+  · Automated CI/CD pipelines from scratch
+  · Managed Kubernetes clusters for production workloads
+  · Implemented IaC with Terraform & Ansible\n`,
+
+            education: () => `
+<span class="t-head">Education</span>
+─────────────────────────────
+<span class="t-cmd">1337 School (42 Network)</span>
+  Peer-to-peer engineering school, Morocco
+  Specialization: Systems & DevOps
+  Notable: No traditional teachers — project-based learning\n`,
+
+            'docker ps': () => `
+CONTAINER ID   IMAGE      STATUS          NAMES
+a1b2c3d4       nginx      <span class="t-ok">Up 6 hours</span>      nginx-lb
+e5f6g7h8       postgres   <span class="t-ok">Up 6 hours</span>      postgres-db
+i9j0k1l2       node:18    <span class="t-ok">Up 2 minutes</span>    portfolio-api
+m3n4o5p6       redis      <span class="t-ok">Up 6 hours</span>      cache-layer\n`,
+
+            kubectl: () => `
+NAME              READY   STATUS    RESTARTS
+frontend-7b8xf    1/1     <span class="t-ok">Running</span>   0
+api-gateway-x9p   1/1     <span class="t-ok">Running</span>   0
+postgres-0        1/1     <span class="t-ok">Running</span>   0
+redis-master-0    1/1     <span class="t-ok">Running</span>   0\n`,
+
+            uptime: () => {
+                const now = new Date();
+                return `
+<span class="t-head">System Status</span>
+─────────────────────────────
+Uptime     : <span class="t-ok">99.9%</span>
+Current    : ${now.toUTCString()}
+Load Avg   : 0.42 0.38 0.35
+Memory     : 2.1GB / 8GB
+All systems: <span class="t-ok">● Operational</span>\n`;
+            },
+
+            ls: () => `
+<span class="t-cmd">projects/</span>   <span class="t-cmd">scripts/</span>   <span class="t-cmd">configs/</span>
+README.md   Dockerfile  docker-compose.yml   .env.example
+Makefile    terraform/  kubernetes/\n`,
+
+            'cat README.md': () => `
+<span class="t-head"># Ilyass Bougajdi — Portfolio</span>
+
+A DevOps engineer who writes infrastructure like code
+and treats uptime like a virtue.
+
+Built with: Vanilla JS · Three.js · GSAP · CSS
+Deploy target: GitHub Pages
+Uptime: <span class="t-ok">Always on</span> 🚀\n`,
+
+            clear: null, // handled separately
+            exit: null,  // handled separately
+        };
+        window.TERMINAL_COMMANDS = COMMANDS;
+
+        // --- Rendering Helpers ---
+        const appendLine = (html, color = null, cls = '') => {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            div.classList.add('t-line');
+            if (cls) div.classList.add(cls);
+            if (color) div.style.color = color;
+            terminalText.appendChild(div);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+            return div;
+        };
+
+        const appendPromptLine = (cmd) => {
+            appendLine(`<span class="t-prompt">ilyass@devops:~$</span> <span class="t-input">${cmd}</span>`);
+        };
+
+        const processCommand = (cmd) => {
+            const raw = cmd.trim().toLowerCase();
+            if (!raw) return;
+
+            if (raw === 'clear') {
+                terminalText.innerHTML = '';
+                return;
+            }
+            if (raw === 'exit') {
+                terminalText.innerHTML = '';
+                inputLine.style.display = 'none';
+                isInteractive = false;
+                collapseTerminal();
+                return;
+            }
+
+            const handler = COMMANDS[raw];
+            if (handler) {
+                const output = handler();
+                appendLine(output, null, 't-output');
+            } else {
+                appendLine(`<span class="t-err">bash: ${cmd}: command not found.</span> Type <span class="t-cmd">help</span> for commands.`, null, 't-output');
             }
         };
 
-        // Start loop
-        setTimeout(() => {
-            typeRecursive();
-        }, 1500);
+        // --- Auto-play Mode ---
+        const autoSequence = [
+            { cmd: 'whoami', delay: 600 },
+            { cmd: 'docker ps', delay: 2500 },
+            { cmd: 'kubectl', delay: 2500 },
+            { cmd: 'uptime', delay: 2500 },
+            { cmd: 'ls', delay: 2000 },
+        ];
+
+        let autoIdx = 0;
+
+        const typeCommand = async (text, div) => {
+            for (let i = 0; i < text.length; i++) {
+                if (isInteractive || !autoPlayRunning) return false;
+                div.querySelector('.t-input').textContent += text[i];
+                await new Promise(r => setTimeout(r, Math.random() * 40 + 30));
+            }
+            return true;
+        };
+
+        const runNextAutoStep = async () => {
+            if (isInteractive || !autoPlayRunning) return;
+
+            const step = autoSequence[autoIdx % autoSequence.length];
+            autoIdx++;
+
+            // Print prompt line with typewriter
+            const promptDiv = document.createElement('div');
+            promptDiv.classList.add('t-line');
+            promptDiv.innerHTML = `<span class="t-prompt">ilyass@devops:~$</span> <span class="t-input"></span>`;
+            terminalText.appendChild(promptDiv);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+
+            const typed = await typeCommand(step.cmd, promptDiv);
+            if (!typed) return;
+
+            await new Promise(r => setTimeout(r, 200));
+            if (isInteractive || !autoPlayRunning) return;
+
+            processCommand(step.cmd);
+            
+            // Pause between commands; clear before next round
+            autoPlayTimeout = setTimeout(async () => {
+                if (!isInteractive && autoPlayRunning) {
+                    // Clear after displaying result for readability
+                    await new Promise(r => setTimeout(r, 400));
+                    if (!isInteractive && autoPlayRunning) {
+                        terminalText.innerHTML = '';
+                        runNextAutoStep();
+                    }
+                }
+            }, step.delay);
+        };
+
+        const startAutoPlay = () => {
+            autoPlayRunning = true;
+            terminalText.innerHTML = '';
+            // Show a hint
+            appendLine(`<span class="t-dim">[ Hover to interact · type <span class="t-cmd">help</span> for commands ]</span>`);
+            setTimeout(() => {
+                if (!isInteractive) runNextAutoStep();
+            }, 1200);
+        };
+
+        const expandTerminal = () => {
+            if (!terminalLoader) return;
+            terminalLoader.classList.add('expanded');
+            document.body.classList.add('terminal-active');
+        };
+
+        const collapseTerminal = () => {
+            if (!terminalLoader) return;
+            terminalLoader.classList.remove('expanded');
+            document.body.classList.remove('terminal-active');
+            startAutoPlay();
+        };
+
+        const switchToInteractive = () => {
+            if (isInteractive) return;
+            isInteractive = true;
+            autoPlayRunning = false;
+            if (autoPlayTimeout) clearTimeout(autoPlayTimeout);
+            expandTerminal();
+            terminalText.innerHTML = '';
+            appendLine(`<span class="t-dim">Interactive mode. Type <span class="t-cmd">help</span> for commands · <span class="t-cmd">exit</span> or move mouse away to minimize.</span>`);
+            inputLine.style.display = 'flex';
+            terminalInput.focus();
+        };
+
+        // --- Hover Handlers ---
+        terminalLoader.addEventListener('mouseenter', () => {
+            if (!isInteractive) {
+                switchToInteractive();
+            }
+        });
+
+        terminalLoader.addEventListener('mouseleave', () => {
+            if (isInteractive) {
+                isInteractive = false;
+                inputLine.style.display = 'none';
+                collapseTerminal();
+            }
+        });
+
+        // --- Keyboard Handler ---
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = terminalInput.value.trim();
+                terminalInput.value = '';
+                historyIdx = -1;
+
+                if (cmd) {
+                    cmdHistory.unshift(cmd);
+                    if (cmdHistory.length > 50) cmdHistory.pop();
+                    appendPromptLine(cmd);
+                    processCommand(cmd);
+                }
+                terminalBody.scrollTop = terminalBody.scrollHeight;
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIdx < cmdHistory.length - 1) {
+                    historyIdx++;
+                    terminalInput.value = cmdHistory[historyIdx] || '';
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIdx > 0) {
+                    historyIdx--;
+                    terminalInput.value = cmdHistory[historyIdx] || '';
+                } else {
+                    historyIdx = -1;
+                    terminalInput.value = '';
+                }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                const partial = terminalInput.value.toLowerCase();
+                const match = Object.keys(COMMANDS).find(k => k.startsWith(partial) && k !== partial);
+                if (match) terminalInput.value = match;
+            }
+        });
+
+        // --- Start ---
+        setTimeout(startAutoPlay, 1500);
     }
 });
 
@@ -558,12 +815,41 @@ document.addEventListener('DOMContentLoaded', () => {
         mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
     });
 
-    // ANIMATION
+    // ANIMATION & INTERSECTION OBSERVER
+    let isAnimating = false;
+    let animationId = null;
+
     const animate = () => {
-        requestAnimationFrame(animate);
+        if (!isAnimating) return;
+        animationId = requestAnimationFrame(animate);
         const time = Date.now() * 0.001;
 
         if (controls && controls.autoRotate) controls.update();
+
+        // Dynamic RGB Hack Color
+        const dynamicColor = new THREE.Color().setHSL((time * 50 % 360) / 360, 1, 0.5);
+
+        // Update Material Colors
+        hubMat.color.copy(dynamicColor);
+        coreMat.color.copy(dynamicColor);
+        particlesMat.color.copy(dynamicColor);
+        
+        nodes.forEach((node) => {
+            node.material.emissive.copy(dynamicColor);
+            // The wireframe is a child of the node, its material is shared or could be updated directly
+            node.children.forEach(child => {
+                if (child.isLineSegments) {
+                    child.material.color.copy(dynamicColor);
+                }
+            });
+        });
+        
+        // Update connection lines
+        group.children.forEach(child => {
+            if (child.isLine && !child.isLineSegments) {
+                child.material.color.copy(dynamicColor);
+            }
+        });
 
         // Hub Animation
         hub.rotation.y += 0.002;
@@ -608,11 +894,335 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.render(scene, camera);
     };
 
-    animate();
+    // Intersection Observer to Pause/Play ThreeJS Animation
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                if (!isAnimating) {
+                    isAnimating = true;
+                    animate();
+                }
+            } else {
+                isAnimating = false;
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            }
+        });
+    }, { threshold: 0.1 });
+
+    const threejsSection = document.getElementById('devops-visual');
+    if (threejsSection) {
+        observer.observe(threejsSection);
+    } else {
+        // Fallback if section ID isn't found
+        isAnimating = true;
+        animate();
+    }
 
     window.addEventListener('resize', () => {
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
     });
+});
+
+// 8. Space Floating & Interactive Social Icons
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof gsap === 'undefined') return;
+
+    const icons = document.querySelectorAll('.social-icon');
+    const container = document.getElementById('social-icons-container');
+    if (!icons.length || !container) return;
+
+    // Remove any previous tweens
+    gsap.killTweensOf(icons);
+
+    icons.forEach((icon, index) => {
+        const state = {
+            swayX: 0,
+            swayY: 0,
+            rot: 0,
+            hover: 0, 
+            magnetX: 0,
+            magnetY: 0
+        };
+
+        // Sway animations
+        gsap.to(state, {
+            swayX: "random(-20, 20)",
+            swayY: "random(-30, 30)",
+            rot: "random(-30, 30)",
+            duration: "random(3, 5)",
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+            delay: Math.random() * 2
+        });
+
+        let hoverTween = null;
+        
+        icon.addEventListener('mouseenter', (e) => {
+            if (hoverTween) hoverTween.kill();
+            const rect = icon.getBoundingClientRect();
+            // Store center of icon dynamically when mouse enters
+            icon._centerX = rect.left + rect.width / 2;
+            icon._centerY = rect.top + rect.height / 2;
+            
+            state.magnetX = (e.clientX - icon._centerX) * 0.8;
+            state.magnetY = (e.clientY - icon._centerY) * 0.8;
+            hoverTween = gsap.to(state, { hover: 1, duration: 0.3, ease: "power2.out" });
+        });
+
+        icon.addEventListener('mousemove', (e) => {
+            if(icon._centerX && icon._centerY) {
+                state.magnetX = (e.clientX - icon._centerX) * 0.8;
+                state.magnetY = (e.clientY - icon._centerY) * 0.8;
+            }
+        });
+
+        icon.addEventListener('mouseleave', () => {
+            if (hoverTween) hoverTween.kill();
+            hoverTween = gsap.to(state, { hover: 0, duration: 0.5, ease: "power2.out" });
+        });
+
+        // Frame rendering
+        gsap.ticker.add(() => {
+            // Interpolate smoothly between floating state and magnet state
+            const currentX = state.swayX + (state.magnetX - state.swayX) * state.hover;
+            const currentY = state.swayY + (state.magnetY - state.swayY) * state.hover;
+            const currentRot = state.rot * (1 - state.hover);
+
+            gsap.set(icon, {
+                x: currentX,
+                y: currentY,
+                rotation: currentRot,
+                force3D: true // Hardware acceleration
+            });
+        });
+    });
+
+    // Global Parallax shift on the container for the "space" interactive feel
+    window.addEventListener('mousemove', (e) => {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        
+        // Inverse movement to mouse
+        const moveX = (e.clientX - centerX) * -0.015;
+        const moveY = (e.clientY - centerY) * -0.015;
+
+        gsap.to(container, {
+            x: moveX,
+            y: moveY,
+            duration: 1.5,
+            ease: "power2.out"
+        });
+    });
+});
+
+// 9. DevOps Project Modal Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const projectCards = document.querySelectorAll('.service-card[data-project-id]');
+    const modal = document.getElementById('project-modal');
+    if (!modal) return;
+
+    const modalCloseBtn = document.getElementById('modal-close-dot');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+
+    const modalInput = document.getElementById('modal-terminal-input');
+    const modalBody = document.querySelector('.modal-body');
+
+    const projectDetails = {
+        transcendence: `$> cat describe_project.sh\n<span style="color: var(--accent);">Project</span>: ft_transcendence\n<span style="color: var(--accent);">Type</span>: Cloud-Native GitOps Platform\n<span style="color: var(--accent);">Description</span>: Microservices Pong platform with real-time chat and matchmaking, deployed via ArgoCD with full GitOps automation on OCI.\n<span style="color: var(--accent);">Tech Stack</span>:\n  - NestJS\n  - React\n  - Postgres\n  - Kubernetes\n  - ArgoCD\n<span style="color: var(--accent);">Key Highlights</span>:\n  [✔] GitOps CI/CD\n  [✔] ELK Observability\n  [✔] SOPS Secrets\n`,
+        irc: `$> cat describe_project.sh\n<span style="color: var(--accent);">Project</span>: ft_irc\n<span style="color: var(--accent);">Type</span>: IRC Server\n<span style="color: var(--accent);">Description</span>: Fully functional IRC server from scratch. Handles concurrent clients via non-blocking sockets and poll().\n<span style="color: var(--accent);">Language</span>: C++\n<span style="color: var(--accent);">I/O Multiplexing</span>: Non-blocking (poll)\n<span style="color: var(--accent);">Protocol</span>: TCP/IP\n`,
+        inception: `$> cat describe_project.sh\n<span style="color: var(--accent);">Project</span>: Inception\n<span style="color: var(--accent);">Role</span>: System Admin\n<span style="color: var(--accent);">Description</span>: Strictly containerized infrastructure on Debian from scratch with private networking, persistent volumes, and optimized Dockerfiles.\n<span style="color: var(--accent);">Tech Stack</span>:\n  - Docker & Docker Compose\n  - Nginx\n  - MariaDB\n  - WordPress\n<span style="color: var(--accent);">Security</span>: Strict\n<span style="color: var(--accent);">Uptime Metric</span>: 100% Reproducible\n`
+    };
+
+    const openModal = (projectId, titleText) => {
+        modalTitle.textContent = titleText;
+        modalContent.innerHTML = projectDetails[projectId] || `$> echo "Project data not found."\n`;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        if (modalInput) {
+            modalInput.value = '';
+            setTimeout(() => modalInput.focus(), 100);
+        }
+    };
+
+    const closeModal = () => {
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+    };
+
+    projectCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const projectId = card.getAttribute('data-project-id');
+            const title = card.querySelector('.service-name').textContent;
+            openModal(projectId, title);
+        });
+    });
+
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', closeModal);
+    }
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        } else if (modalInput) {
+            // Auto-focus input when clicking inside the modal
+            modalInput.focus();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
+
+    // --- Modal Terminal Interaction Logic ---
+    if (modalInput) {
+        let cmdHistory = [];
+        let historyIdx = -1;
+
+        const appendLine = (html, cls = '') => {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            div.classList.add('t-line');
+            if (cls) div.classList.add(cls);
+            modalContent.appendChild(div);
+            if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
+        };
+
+        modalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = modalInput.value.trim();
+                modalInput.value = '';
+                historyIdx = -1;
+
+                if (cmd) {
+                    cmdHistory.unshift(cmd);
+                    if (cmdHistory.length > 50) cmdHistory.pop();
+                    
+                    // Echo command
+                    appendLine(`<span class="t-prompt" style="color: var(--accent);">ilyass@devops:~$</span> <span class="t-input">${cmd}</span>`);
+                    
+                    // Process command
+                    const raw = cmd.toLowerCase();
+                    if (raw === 'clear') {
+                        modalContent.innerHTML = '';
+                    } else if (raw === 'exit') {
+                        closeModal();
+                    } else {
+                        const handler = window.TERMINAL_COMMANDS ? window.TERMINAL_COMMANDS[raw] : null;
+                        if (handler) {
+                            appendLine(handler(), 't-output');
+                        } else {
+                            appendLine(`<span class="t-err">bash: ${cmd}: command not found.</span> Type <span class="t-cmd">help</span> for commands.`, 't-output');
+                        }
+                    }
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIdx < cmdHistory.length - 1) {
+                    historyIdx++;
+                    modalInput.value = cmdHistory[historyIdx] || '';
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIdx > 0) {
+                    historyIdx--;
+                    modalInput.value = cmdHistory[historyIdx] || '';
+                } else {
+                    historyIdx = -1;
+                    modalInput.value = '';
+                }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                if (window.TERMINAL_COMMANDS) {
+                    const partial = modalInput.value.toLowerCase();
+                    const match = Object.keys(window.TERMINAL_COMMANDS).find(k => k.startsWith(partial) && k !== partial);
+                    if (match) modalInput.value = match;
+                }
+            }
+        });
+    }
+});
+
+// 10. About Me Terminal Interaction
+document.addEventListener('DOMContentLoaded', () => {
+    const aboutInput = document.getElementById('about-terminal-input');
+    const aboutContent = document.getElementById('about-terminal-content');
+    const aboutBody = document.getElementById('about-terminal-body');
+
+    if (aboutInput && aboutContent && aboutBody) {
+        let cmdHistory = [];
+        let historyIdx = -1;
+
+        const appendLine = (html, cls = '') => {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            div.classList.add('t-line');
+            if (cls) div.classList.add(cls);
+            aboutContent.appendChild(div);
+            aboutBody.scrollTop = aboutBody.scrollHeight;
+        };
+
+        aboutInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = aboutInput.value.trim();
+                aboutInput.value = '';
+                historyIdx = -1;
+
+                if (cmd) {
+                    cmdHistory.unshift(cmd);
+                    if (cmdHistory.length > 50) cmdHistory.pop();
+                    
+                    // Echo command
+                    appendLine(`<span class="t-prompt" style="color: var(--accent);">ilyass@devops:~$</span> <span class="t-input">${cmd}</span>`);
+                    
+                    // Process command
+                    const raw = cmd.toLowerCase();
+                    if (raw === 'clear') {
+                        aboutContent.innerHTML = '';
+                    } else {
+                        const handler = window.TERMINAL_COMMANDS ? window.TERMINAL_COMMANDS[raw] : null;
+                        if (handler) {
+                            appendLine(handler(), 't-output');
+                        } else {
+                            appendLine(`<span class="t-err">bash: ${cmd}: command not found.</span> Type <span class="t-cmd">help</span> for commands.`, 't-output');
+                        }
+                    }
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIdx < cmdHistory.length - 1) {
+                    historyIdx++;
+                    aboutInput.value = cmdHistory[historyIdx] || '';
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIdx > 0) {
+                    historyIdx--;
+                    aboutInput.value = cmdHistory[historyIdx] || '';
+                } else {
+                    historyIdx = -1;
+                    aboutInput.value = '';
+                }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                if (window.TERMINAL_COMMANDS) {
+                    const partial = aboutInput.value.toLowerCase();
+                    const match = Object.keys(window.TERMINAL_COMMANDS).find(k => k.startsWith(partial) && k !== partial);
+                    if (match) aboutInput.value = match;
+                }
+            }
+        });
+
+        aboutBody.addEventListener('click', () => {
+            aboutInput.focus();
+        });
+    }
 });

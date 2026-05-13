@@ -1,83 +1,333 @@
-/* Terminal Animation Styles */
+/* Terminal Styles */
+@keyframes terminalFadeInUp {
+    0% {
+        opacity: 0;
+        transform: perspective(1000px) translateY(40px) rotateX(15deg) rotateY(-15deg) rotateZ(2deg);
+        box-shadow: -10px 15px 20px rgba(0,0,0,0.4);
+    }
+    100% {
+        opacity: 1;
+        transform: perspective(1000px) translateY(0) rotateX(15deg) rotateY(-15deg) rotateZ(2deg);
+        box-shadow: -20px 30px 40px rgba(0,0,0,0.6);
+    }
+}
+
 .terminal-loader {
-    background-color: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    background: rgba(13, 17, 23, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     width: 100%;
-    max-width: 500px;
-    margin: 40px auto 0;
-    overflow: hidden;
+    max-width: 600px;
+    margin: 80px auto 0; /* Increased top margin for the coder to sit */
+    overflow: visible; /* Changed to visible for the 3D figure popping out */
     text-align: left;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
     opacity: 0;
-    animation: fadeInUp 0.8s ease-out forwards 1.2s;
+    transform-style: preserve-3d;
+    transform: perspective(1000px) rotateX(15deg) rotateY(-15deg) rotateZ(2deg);
+    animation: terminalFadeInUp 0.8s ease-out forwards 1.2s;
+    cursor: default;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease, border-color 0.6s ease;
+    position: relative;
+    z-index: 10;
 }
 
-.terminal-header {
-    background-color: #161b22;
-    padding: 8px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #30363d;
+/* Base clipping for body so the coder isn't clipped by overflow */
+.terminal-loader .terminal-header {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
-
-.terminal-title {
-    color: #8b949e;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.terminal-controls {
-    display: flex;
-    gap: 6px;
-}
-
-.control {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-}
-
-.control.close {
-    background-color: #ff5f56;
-}
-
-.control.minimize {
-    background-color: #ffbd2e;
-}
-
-.control.maximize {
-    background-color: #27c93f;
-}
-
-.text-body {
-    padding: 15px;
-    height: 220px;
+.terminal-loader .text-body {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
     overflow-y: auto;
 }
 
-.console-text {
-    color: #5af78e;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    white-space: pre-wrap;
+.terminal-loader::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 12px;
+    pointer-events: none;
+    box-shadow: inset 0 0 20px rgba(100, 255, 218, 0.05);
+    z-index: -1;
 }
 
-.console-text::after {
-    content: '_';
-    animation: blink 1s step-end infinite;
+.terminal-loader:hover {
+    border-color: rgba(100, 255, 218, 0.5);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(100, 255, 218, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
+
+/* ── EXPANDED / POPPED STATE ── */
+.terminal-loader.expanded {
+    z-index: 9001 !important;
+    transform: perspective(1000px) scale(1.6) translateY(-5%) rotateX(0deg) rotateY(0deg) rotateZ(0deg) !important;
+    border-color: rgba(100, 255, 218, 0.6) !important;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(100, 255, 218, 0.3),
+                0 0 80px rgba(100, 255, 218, 0.2) !important;
+}
+
+/* Because we are scaling the whole container 1.6x, we don't need to manually increase max-width or text-body height. It naturally grows 1.6x larger visually. */
+.terminal-loader.expanded .text-body {
+    height: 280px; /* Keep original so scale multiplies it properly */
+}
+
+/* ── HEADER ── */
+.terminal-loader .terminal-header {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    user-select: none;
+    position: relative;
+}
+
+.terminal-loader .terminal-title {
+    color: #a8b2d1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.terminal-loader .terminal-title::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2364ffda" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>');
+    background-size: cover;
+}
+
+.terminal-controls { display: flex; gap: 8px; }
+
+.control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    cursor: default;
+    transition: filter 0.2s ease;
+}
+.control:hover { filter: brightness(1.2); }
+.control.close    { background-color: #ff5f56; box-shadow: 0 0 5px rgba(255,95,86,0.5); }
+.control.minimize { background-color: #ffbd2e; box-shadow: 0 0 5px rgba(255,189,46,0.5); }
+.control.maximize { background-color: #27c93f; box-shadow: 0 0 5px rgba(39,201,63,0.5); }
+
+/* ── BODY ── */
+.text-body {
+    padding: 16px 20px;
+    height: 250px;
+    overflow-y: auto;
+    transition: height 0.4s ease;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 255, 218, 0.3) transparent;
+}
+.text-body::-webkit-scrollbar { width: 6px; }
+.text-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
+.text-body::-webkit-scrollbar-thumb { background: rgba(100, 255, 218, 0.3); border-radius: 4px; }
+.text-body::-webkit-scrollbar-thumb:hover { background: rgba(100, 255, 218, 0.6); }
+
+.console-text { font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; color: #e2e8f0; }
 
 @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
 
-    0%,
-    100% {
-        opacity: 1;
-    }
+/* ── LINE TOKENS ── */
+.t-line   { white-space: pre-wrap; line-height: 1.7; font-size: 0.9rem; margin-bottom: 2px;}
+.t-output { margin-bottom: 8px; color: #cbd5e1; }
+.t-prompt { color: #64ffda; font-weight: 600; text-shadow: 0 0 8px rgba(100,255,218,0.4); }
+.t-input  { color: #f8fafc; text-shadow: 0 0 2px rgba(255,255,255,0.3); }
+.t-head   { color: #38bdf8; font-weight: bold; text-shadow: 0 0 8px rgba(56,189,248,0.4); }
+.t-cmd    { color: #a78bfa; font-weight: 500; }
+.t-ok     { color: #4ade80; text-shadow: 0 0 8px rgba(74,222,128,0.4); }
+.t-err    { color: #f87171; text-shadow: 0 0 8px rgba(248,113,113,0.4); }
+.t-label  { color: #fbbf24; }
+.t-dim    { color: #64748b; font-style: italic; }
 
-    50% {
-        opacity: 0;
-    }
+/* ── INPUT ── */
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-top: 12px;
+}
+
+.prompt-symbol {
+    color: #64ffda;
+    font-weight: 600;
+    margin-right: 10px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    text-shadow: 0 0 8px rgba(100,255,218,0.4);
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    color: #f8fafc;
+    font-family: inherit;
+    font-size: 0.9rem;
+    flex-grow: 1;
+    outline: none;
+    caret-color: #64ffda;
+    cursor: text;
+    text-shadow: 0 0 2px rgba(255,255,255,0.3);
+}
+
+.terminal-input::selection {
+    background: rgba(100, 255, 218, 0.3);
+}
+
+/* ── MOSAIC BACKGROUND EFFECT ── */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 8900;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease, backdrop-filter 0.5s ease;
+    background-color: rgba(2, 12, 27, 0.6);
+    backdrop-filter: blur(0px);
+    background-image: 
+        repeating-linear-gradient(45deg, rgba(100, 255, 218, 0.04) 25%, transparent 25%, transparent 75%, rgba(100, 255, 218, 0.04) 75%, rgba(100, 255, 218, 0.04)),
+        repeating-linear-gradient(45deg, rgba(100, 255, 218, 0.04) 25%, transparent 25%, transparent 75%, rgba(100, 255, 218, 0.04) 75%, rgba(100, 255, 218, 0.04));
+    background-position: 0 0, 15px 15px;
+    background-size: 30px 30px;
+}
+
+body.terminal-active::after {
+    opacity: 1;
+    backdrop-filter: blur(6px);
+    pointer-events: auto; /* blocks clicks outside terminal, but mouseout closes terminal so it's fine */
+}
+
+/* ── 3D CODER ANIMATION ── */
+.coder-animation {
+    position: absolute;
+    top: -70px;
+    right: 30px;
+    width: 80px;
+    height: 80px;
+    z-index: 20;
+    transform-style: preserve-3d;
+    transform: rotateX(-5deg) rotateY(-20deg);
+    transition: transform 0.6s ease;
+}
+
+/* Fix rotation when expanded so it matches the terminal face */
+.terminal-loader.expanded .coder-animation {
+    transform: rotateX(0deg) rotateY(0deg) scale(1.1);
+    top: -85px;
+    right: 40px;
+}
+
+@keyframes typingHead {
+    0%, 100% { transform: translateY(0) rotateZ(2deg); }
+    50% { transform: translateY(2px) rotateZ(-2deg); }
+}
+
+@keyframes typingBody {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(0.95); }
+    100% { transform: scaleY(1); }
+}
+
+@keyframes glowLaptop {
+    0%, 100% { box-shadow: 0 -5px 15px rgba(100,255,218,0.4); }
+    50% { box-shadow: 0 -8px 25px rgba(100,255,218,0.7); }
+}
+
+.coder-head {
+    width: 32px;
+    height: 32px;
+    background: #e2e8f0;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 24px;
+    box-shadow: inset -4px -4px 10px rgba(0,0,0,0.3);
+    animation: typingHead 1.5s infinite ease-in-out;
+    z-index: 3;
+}
+
+/* Simple geometric visor/glasses */
+.coder-head::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 4px;
+    width: 20px;
+    height: 8px;
+    background: #64ffda;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(100,255,218,0.8);
+}
+
+.coder-body {
+    width: 44px;
+    height: 40px;
+    background: #1e293b;
+    border-radius: 20px 20px 8px 8px;
+    position: absolute;
+    top: 28px;
+    left: 18px;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.5), 0 10px 15px rgba(0,0,0,0.5);
+    animation: typingBody 1.5s infinite ease-in-out;
+    transform-origin: bottom center;
+    z-index: 2;
+}
+
+.coder-laptop {
+    position: absolute;
+    top: 45px;
+    left: 0px;
+    z-index: 4;
+    transform-style: preserve-3d;
+}
+
+.laptop-screen {
+    width: 36px;
+    height: 26px;
+    background: #0f172a;
+    border: 2px solid #cbd5e1;
+    border-radius: 4px;
+    transform: rotateX(15deg) rotateY(15deg);
+    transform-origin: bottom right;
+    position: relative;
+    animation: glowLaptop 2s infinite alternate;
+}
+
+/* Laptop code lines */
+.laptop-screen::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: 4px;
+    width: 80%;
+    height: 2px;
+    background: #64ffda;
+    box-shadow: 0 4px 0 #64ffda, 0 8px 0 rgba(100,255,218,0.5), 0 12px 0 #64ffda;
+    opacity: 0.8;
+}
+
+.laptop-keyboard {
+    width: 42px;
+    height: 18px;
+    background: #94a3b8;
+    border-radius: 2px;
+    position: absolute;
+    bottom: -8px;
+    left: -12px;
+    transform: rotateX(60deg) rotateZ(15deg);
 }
