@@ -38,9 +38,11 @@
     toast(`✓ copied ${EMAIL}`);
   }
 
+  // in drive mode the car takes you there; resolves once you've arrived
   function goTo(id) {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    if (window.drive) return window.drive.go(id) || Promise.resolve();
+    document.getElementById(id)?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    return Promise.resolve();
   }
 
   // ------------------------------------------------------------ boot sequence
@@ -81,31 +83,7 @@
     setTimeout(step, 150);
   }
 
-  // ------------------------------------------------------------ top bar, progress, nav
-  const topbar = $('#topbar'), progress = $('#progress');
-  let ticking = false;
-  function onScroll() {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      const max = document.documentElement.scrollHeight - innerHeight;
-      progress.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
-      topbar.classList.toggle('is-scrolled', scrollY > 20);
-      ticking = false;
-    });
-  }
-  addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  const navLinks = $$('[data-nav]');
-  const navObserver = new IntersectionObserver(entries => {
-    for (const e of entries) {
-      if (!e.isIntersecting) continue;
-      navLinks.forEach(a => a.classList.toggle('is-active', a.dataset.nav === e.target.id));
-    }
-  }, { rootMargin: '-45% 0px -50% 0px' });
-  ['about', 'work', 'stack', 'journey', 'shell', 'contact'].forEach(id => { const el = document.getElementById(id); if (el) navObserver.observe(el); });
-
+  // ------------------------------------------------------------ mobile menu (active link + progress live in drive.js)
   const menuBtn = $('#menu-btn'), nav = $('#nav');
   menuBtn.addEventListener('click', () => {
     const open = menuBtn.getAttribute('aria-expanded') !== 'true';
@@ -288,13 +266,13 @@
     }],
     git: [null, args => (args[0] === 'log' ? COMMANDS.journey[1]() : print(c('dim', 'try: git log')))],
     boost: ['floor it 🚗', () => {
-      print(c('ok', 'nitro engaged. scrolling up to the highway …'));
-      goTo('top');
-      setTimeout(() => window.scene?.boost(3), reduceMotion ? 0 : 600);
+      print(c('ok', reduceMotion ? 'nitro is off: your system asks for reduced motion.' : 'nitro engaged. look down. 🚗💨'));
+      window.scene?.boost(3);
     }],
-    goto: ['scroll to a section', ([s]) => {
-      const id = s === 'projects' ? 'work' : s;
-      if (!SECTIONS.includes(id)) { print(c('dim', `sections: ${SECTIONS.join(' · ')}`)); return; }
+    goto: ['drive to a district', ([s]) => {
+      const id = s === 'projects' ? 'work' : s === 'home' ? 'top' : s;
+      if (!SECTIONS.includes(id) && id !== 'top') { print(c('dim', `districts: home · ${SECTIONS.join(' · ')}`)); return; }
+      print(c('dim', `driving to ${id === 'top' ? 'home' : id} …`));
       goTo(id);
     }],
     cd: [null, ([s]) => (s && s !== '~' ? COMMANDS.goto[1]([s.replace(/^\.?\/?/, '')]) : print(''))],
@@ -317,7 +295,7 @@
     vim: [null, () => print(c('dim', "you're stuck now. just kidding — type :q (or anything else)"))],
     ping: [null, () => printLines([`PING ilyass.dev: 56 data bytes`, `64 bytes: icmp_seq=0 ttl=64 time=13.37 ms`, c('ok', '--- 1 packets transmitted, 1 received, 0% packet loss ---')])],
     clear: ['clear the screen', () => { out.innerHTML = ''; }],
-    exit: ['leave the shell', () => print(c('dim', 'logout. (you can\'t really leave — but you can scroll down and say hi)'))]
+    exit: ['leave the shell', () => print(c('dim', 'logout. (you can\'t really leave — but you can drive on and say hi)'))]
   };
   const NAMES = Object.keys(COMMANDS);
 
@@ -360,8 +338,8 @@
   });
   termBody.addEventListener('click', () => { if (!getSelection().toString()) input.focus({ preventScroll: true }); });
   $$('.chip-cmd').forEach(b => b.addEventListener('click', () => { run(b.dataset.cmd); input.focus({ preventScroll: true }); }));
-  const focusShell = () => setTimeout(() => input.focus({ preventScroll: true }), reduceMotion ? 0 : 650);
-  $$('[data-focus-shell]').forEach(a => a.addEventListener('click', focusShell));
+  const focusShell = () => goTo('shell').then(() => input.focus({ preventScroll: true }));
+  $$('[data-focus-shell]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); focusShell(); }));
 
   // ------------------------------------------------------------ command palette
   const palette = $('#palette'), pInput = $('#palette-input'), pList = $('#palette-list');
@@ -371,14 +349,14 @@
     ['→', 'Go to tech stack', 'stack', () => goTo('stack')],
     ['→', 'Go to journey', 'git log', () => goTo('journey')],
     ['→', 'Go to contact', 'contact', () => goTo('contact')],
-    ['$', 'Open the terminal', '`', () => { goTo('shell'); focusShell(); }],
+    ['$', 'Open the terminal', '`', focusShell],
     ['@', 'Copy email address', 'email', copyEmail],
     ['↓', 'Download CV', 'pdf', () => COMMANDS.cv[1]()],
     ['↗', 'Open GitHub', 'github', () => window.open(LINKS.github, '_blank', 'noopener')],
     ['↗', 'Open LinkedIn', 'linkedin', () => window.open(LINKS.linkedin, '_blank', 'noopener')],
     ['↗', 'View ft_transcendence source', 'project', () => window.open(PROJECTS.ft_transcendence[1], '_blank', 'noopener')],
     ['»', 'Boost the car', 'nitro', () => COMMANDS.boost[1]()],
-    ['↑', 'Back to top', 'home', () => goTo('top')]
+    ['↑', 'Back to the start', 'home', () => goTo('top')]
   ];
   let matches = ACTIONS, sel = 0, lastFocus = null;
   const fuzzy = (q, s) => { let i = 0; for (const ch of s.toLowerCase()) if (ch === q[i]) i++; return i === q.length; };
@@ -415,7 +393,7 @@
     const typing = e.target instanceof Element && e.target.closest('input, textarea');
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); palette.hidden ? openPalette() : closePalette(); }
     else if (e.key === 'Escape' && !palette.hidden) closePalette();
-    else if (e.key === '`' && !typing) { e.preventDefault(); goTo('shell'); focusShell(); }
+    else if (e.key === '`' && !typing) { e.preventDefault(); focusShell(); }
   });
 
   // ------------------------------------------------------------ contact

@@ -1,7 +1,10 @@
 # ilyass@1337 — portfolio
 
-My personal site: a cyberpunk HUD in the same style as my GitHub profile, with a live night-city highway in the hero
-(hold <kbd>Space</kbd> or <kbd>→</kbd> to boost the car), a working terminal, and a <kbd>Ctrl</kbd>+<kbd>K</kbd> command palette.
+My personal site: a cyberpunk HUD in the same style as my GitHub profile, built as one night drive.
+The window never scrolls. Every section is a district on a zigzag highway: scroll (or swipe, or press ↓) and the car
+runs to the end of its level, U-turns down a ramp to the next one, and the new district rolls in with its own colors.
+A panel that holds more than fits scrolls first; the car only drives on once you reach its edge.
+Hold <kbd>Space</kbd> or <kbd>→</kbd> to boost. There's also a working terminal and a <kbd>Ctrl</kbd>+<kbd>K</kbd> command palette.
 
 Static HTML/CSS/JS — no framework, no build step.
 
@@ -18,11 +21,13 @@ which browsers block on `file://`.
 ## Structure
 
 ```
-index.html            all sections
+index.html            all sections, each one a <section class="stage"> (a district)
 404.html              terminal-style "command not found" page
-css/style.css         design tokens, HUD panels, layout
-js/scene.js           hero canvas: city, sun, highway, car (pauses off-screen, respects reduced motion)
-js/main.js            boot sequence, nav, terminal commands, command palette, filters, contact form
+css/style.css         design tokens, HUD panels, layout; "DRIVE MODE" at the end is the fixed-window layout
+js/scene.js           the drive: per-district themes (THEMES), city, highway, ramps, car — canvas, no assets
+js/drive.js           district controller: wheel / swipe / keys / links → drives, panel-first scrolling, minimap, URL hash
+js/main.js            boot sequence, terminal commands, command palette, filters, contact form
+js/motion.js          panel entrances, git log fill, card tilt
 assets/icons.svg      logo sprite built from Simple Icons
 assets/og.png         social preview image
 tools/build-icons.py  rebuilds the sprite — add a slug to SLUGS and re-run
@@ -36,9 +41,14 @@ tools/og.html         template for og.png (serve the site, screenshot at 1200×6
 - **Terminal commands** — the `COMMANDS` object in `js/main.js`.
 - **CV** — replace `assets/ilyass-bougajdi-cv.pdf`.
 - **Contact form** — posts to Formspree (`action` on `#mailer`).
+- **District look** — colors, skyline height and neon sign words per district: the `THEMES` array in `js/scene.js`
+  (same order as the sections in `index.html`).
+
+Deep links work: `/#work`, `/#contact`, … start the drive in that district. With reduced motion the car parks and
+districts switch instantly; without JavaScript the page falls back to a normal scrolling page.
 
 ## Deploy (GitHub Pages)
 
-Push the contents of this folder to the root of a repo and enable Pages, e.g. replace the contents of
-`ibougajd.github.io`. Once the final domain is known, make `og:image` in `index.html` an absolute URL
-(e.g. `https://ibougajd.github.io/assets/og.png`) so link previews work everywhere.
+This folder is the `ibougajd.github.io` repo: push to `main` and Pages serves it from the root (`.nojekyll` skips
+Jekyll). After changing CSS/JS, bump the `?v=` query on the `<link>`/`<script>` tags in `index.html` so visitors
+don't get a stale cached copy.

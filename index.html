@@ -18,11 +18,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261009175726">
+  <link rel="stylesheet" href="css/style.css?v=20261013">
   <script>
     (function () {
       var d = document.documentElement, booted = null;
-      d.classList.add('js');
+      d.classList.add('js', 'drive');
       try { booted = sessionStorage.getItem('booted'); } catch (e) {}
       var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (!calm && 'IntersectionObserver' in window) d.classList.add('motion');
@@ -54,10 +54,14 @@
   <div class="progress" id="progress" aria-hidden="true"></div>
   <div class="bg-grid" id="bg-grid" aria-hidden="true"></div>
 
-  <nav class="route" id="route" aria-label="Page sections">
-    <span class="route-label" id="route-label" aria-hidden="true">00 // START</span>
-    <div class="route-track" aria-hidden="true"><span class="route-fill" id="route-fill"></span></div>
+  <!-- the night drive: one fixed scene, the sections are districts along a zigzag highway -->
+  <canvas class="scene" id="scene" aria-hidden="true"></canvas>
+
+  <nav class="route" id="route" aria-label="Districts">
+    <span class="route-label" aria-hidden="true">ROUTE</span>
+    <svg class="route-map" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline id="route-line"/><polyline id="route-fill"/></svg>
     <ol class="route-stops">
+      <li><a href="#top" data-stop="top" aria-label="Start"><span>00</span></a></li>
       <li><a href="#about" data-stop="about" aria-label="About"><span>01</span></a></li>
       <li><a href="#work" data-stop="work" aria-label="Projects"><span>02</span></a></li>
       <li><a href="#stack" data-stop="stack" aria-label="Tech stack"><span>03</span></a></li>
@@ -66,7 +70,7 @@
       <li><a href="#contact" data-stop="contact" aria-label="Contact"><span>06</span></a></li>
     </ol>
     <svg class="route-car" id="route-car" width="30" height="9" viewBox="0 0 440 130" aria-hidden="true"><path d="M10,92 L2,72 L4,52 L62,46 Q102,42 130,20 L196,14 Q236,17 288,46 L400,58 Q426,62 434,76 L430,88 L418,94 Z"/><circle cx="96" cy="96" r="30"/><circle cx="338" cy="96" r="30"/></svg>
-    <span class="route-pct" id="route-pct" aria-hidden="true">0%</span>
+    <span class="route-pct" id="route-pct" aria-hidden="true">LVL 0/6</span>
   </nav>
 
   <header class="topbar" id="topbar">
@@ -96,11 +100,10 @@
 
   <main id="main">
     <!-- ============================================================ HERO -->
-    <section class="hero" id="top" aria-label="Introduction">
-      <canvas id="scene" aria-hidden="true"></canvas>
+    <section class="stage stage-hero hero" id="top" data-name="START" data-title="Home" aria-label="Introduction">
       <div class="hero-shade" aria-hidden="true"></div>
-      <div class="hero-fade" id="hero-fade" aria-hidden="true"></div>
-
+      <div class="stage-panel">
+      <div class="stage-scroll" tabindex="-1">
       <div class="hero-inner wrap">
         <p class="prompt"><span class="p-user">ilyass@1337</span><span class="p-path">&nbsp;~&nbsp;$</span>&nbsp;whoami<span class="caret" aria-hidden="true"></span></p>
         <h1 class="hero-title" data-text="ILYASS BOUGAJDI"><span>ILYASS</span> <span>BOUGAJDI</span></h1>
@@ -123,24 +126,15 @@
           <li>1337 (UM6P) · 42 Network</li>
         </ul>
       </div>
-
-      <div class="hud-speed" aria-hidden="true">
-        <div class="hud-speed-head"><span>VELOCITY</span><span>km/h</span></div>
-        <div class="hud-speed-val"><span id="speedo">088</span></div>
-        <div class="hud-speed-track"><span id="speedo-bar"></span></div>
-        <div class="hud-speed-hint">hold <kbd>space</kbd> or <kbd>→</kbd> to boost</div>
       </div>
-      <button class="boost-btn" id="boost" type="button" aria-label="Boost the car (hold)">BOOST</button>
-
-      <a class="scroll-hint" href="#about" aria-label="Scroll to about">
-        <span>scroll</span><span class="scroll-line" aria-hidden="true"></span>
-      </a>
+      </div>
     </section>
 
     <!-- ============================================================ ABOUT -->
-    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">01</span><span>//</span><span class="b-name">WHOAMI</span><span>···</span><span class="b-cmd">$ cat about.md</span><span>···</span><span>loading profile</span><span>···</span><span class="b-ok">[ OK ] identity verified</span><span>···</span><span class="b-no">01</span><span>//</span><span class="b-name">WHOAMI</span><span>···</span><span class="b-cmd">$ cat about.md</span><span>···</span><span>loading profile</span><span>···</span><span class="b-ok">[ OK ] identity verified</span><span>···</span><span class="b-no">01</span><span>//</span><span class="b-name">WHOAMI</span><span>···</span><span class="b-cmd">$ cat about.md</span><span>···</span><span>loading profile</span><span>···</span><span class="b-ok">[ OK ] identity verified</span><span>···</span><span class="b-no">01</span><span>//</span><span class="b-name">WHOAMI</span><span>···</span><span class="b-cmd">$ cat about.md</span><span>···</span><span>loading profile</span><span>···</span><span class="b-ok">[ OK ] identity verified</span><span>···</span></div></div>
 
-    <section class="section" id="about" aria-labelledby="about-title">
+    <section class="stage section" id="about" data-name="WHOAMI" data-title="About" aria-labelledby="about-title">
+      <div class="stage-panel panel">
+      <div class="stage-scroll" tabindex="-1">
       <div class="wrap">
         <header class="sec-head reveal">
           <div class="sec-bar"><span>PANEL</span><span>01 // WHOAMI</span></div>
@@ -206,12 +200,15 @@
           </li>
         </ul>
       </div>
+      </div>
+      </div>
     </section>
 
     <!-- ============================================================ WORK -->
-    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">02</span><span>//</span><span class="b-name">PROJECTS</span><span>···</span><span class="b-cmd">$ git clone --recursive</span><span>···</span><span>pulling repositories</span><span>···</span><span class="b-ok">[ OK ] builds passing</span><span>···</span><span class="b-no">02</span><span>//</span><span class="b-name">PROJECTS</span><span>···</span><span class="b-cmd">$ git clone --recursive</span><span>···</span><span>pulling repositories</span><span>···</span><span class="b-ok">[ OK ] builds passing</span><span>···</span><span class="b-no">02</span><span>//</span><span class="b-name">PROJECTS</span><span>···</span><span class="b-cmd">$ git clone --recursive</span><span>···</span><span>pulling repositories</span><span>···</span><span class="b-ok">[ OK ] builds passing</span><span>···</span><span class="b-no">02</span><span>//</span><span class="b-name">PROJECTS</span><span>···</span><span class="b-cmd">$ git clone --recursive</span><span>···</span><span>pulling repositories</span><span>···</span><span class="b-ok">[ OK ] builds passing</span><span>···</span></div></div>
 
-    <section class="section" id="work" aria-labelledby="work-title">
+    <section class="stage section" id="work" data-name="PROJECTS" data-title="Projects" aria-labelledby="work-title">
+      <div class="stage-panel panel">
+      <div class="stage-scroll" tabindex="-1">
       <div class="wrap">
         <header class="sec-head reveal">
           <div class="sec-bar"><span>PANEL</span><span>02 // PROJECTS</span></div>
@@ -364,12 +361,15 @@
           </li>
         </ul>
       </div>
+      </div>
+      </div>
     </section>
 
     <!-- ============================================================ STACK -->
-    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">03</span><span>//</span><span class="b-name">STACK</span><span>···</span><span class="b-cmd">$ stack --list --all</span><span>···</span><span>scanning toolchain</span><span>···</span><span class="b-ok">[ OK ] 40 modules loaded</span><span>···</span><span class="b-no">03</span><span>//</span><span class="b-name">STACK</span><span>···</span><span class="b-cmd">$ stack --list --all</span><span>···</span><span>scanning toolchain</span><span>···</span><span class="b-ok">[ OK ] 40 modules loaded</span><span>···</span><span class="b-no">03</span><span>//</span><span class="b-name">STACK</span><span>···</span><span class="b-cmd">$ stack --list --all</span><span>···</span><span>scanning toolchain</span><span>···</span><span class="b-ok">[ OK ] 40 modules loaded</span><span>···</span><span class="b-no">03</span><span>//</span><span class="b-name">STACK</span><span>···</span><span class="b-cmd">$ stack --list --all</span><span>···</span><span>scanning toolchain</span><span>···</span><span class="b-ok">[ OK ] 40 modules loaded</span><span>···</span></div></div>
 
-    <section class="section" id="stack" aria-labelledby="stack-title">
+    <section class="stage section" id="stack" data-name="STACK" data-title="Tech stack" aria-labelledby="stack-title">
+      <div class="stage-panel panel">
+      <div class="stage-scroll" tabindex="-1">
       <div class="wrap">
         <header class="sec-head reveal">
           <div class="sec-bar"><span>PANEL</span><span>03 // STACK</span></div>
@@ -381,12 +381,15 @@
 
         <div class="stack-groups" id="stack-groups"><!-- rendered by main.js --></div>
       </div>
+      </div>
+      </div>
     </section>
 
     <!-- ============================================================ JOURNEY -->
-    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">04</span><span>//</span><span class="b-name">GIT LOG</span><span>···</span><span class="b-cmd">$ git log --graph</span><span>···</span><span>replaying history</span><span>···</span><span class="b-ok">[ OK ] HEAD → main</span><span>···</span><span class="b-no">04</span><span>//</span><span class="b-name">GIT LOG</span><span>···</span><span class="b-cmd">$ git log --graph</span><span>···</span><span>replaying history</span><span>···</span><span class="b-ok">[ OK ] HEAD → main</span><span>···</span><span class="b-no">04</span><span>//</span><span class="b-name">GIT LOG</span><span>···</span><span class="b-cmd">$ git log --graph</span><span>···</span><span>replaying history</span><span>···</span><span class="b-ok">[ OK ] HEAD → main</span><span>···</span><span class="b-no">04</span><span>//</span><span class="b-name">GIT LOG</span><span>···</span><span class="b-cmd">$ git log --graph</span><span>···</span><span>replaying history</span><span>···</span><span class="b-ok">[ OK ] HEAD → main</span><span>···</span></div></div>
 
-    <section class="section" id="journey" aria-labelledby="journey-title">
+    <section class="stage section" id="journey" data-name="GIT LOG" data-title="Journey" aria-labelledby="journey-title">
+      <div class="stage-panel panel">
+      <div class="stage-scroll" tabindex="-1">
       <div class="wrap">
         <header class="sec-head reveal">
           <div class="sec-bar"><span>PANEL</span><span>04 // GIT LOG</span></div>
@@ -440,12 +443,15 @@
           </li>
         </ol>
       </div>
+      </div>
+      </div>
     </section>
 
     <!-- ============================================================ SHELL -->
-    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">05</span><span>//</span><span class="b-name">SHELL</span><span>···</span><span class="b-cmd">$ ssh visitor@1337</span><span>···</span><span>opening session</span><span>···</span><span class="b-ok">[ OK ] tty allocated</span><span>···</span><span class="b-no">05</span><span>//</span><span class="b-name">SHELL</span><span>···</span><span class="b-cmd">$ ssh visitor@1337</span><span>···</span><span>opening session</span><span>···</span><span class="b-ok">[ OK ] tty allocated</span><span>···</span><span class="b-no">05</span><span>//</span><span class="b-name">SHELL</span><span>···</span><span class="b-cmd">$ ssh visitor@1337</span><span>···</span><span>opening session</span><span>···</span><span class="b-ok">[ OK ] tty allocated</span><span>···</span><span class="b-no">05</span><span>//</span><span class="b-name">SHELL</span><span>···</span><span class="b-cmd">$ ssh visitor@1337</span><span>···</span><span>opening session</span><span>···</span><span class="b-ok">[ OK ] tty allocated</span><span>···</span></div></div>
 
-    <section class="section" id="shell" aria-labelledby="shell-title">
+    <section class="stage section" id="shell" data-name="SHELL" data-title="Shell" aria-labelledby="shell-title">
+      <div class="stage-panel panel">
+      <div class="stage-scroll" tabindex="-1">
       <div class="wrap">
         <header class="sec-head reveal">
           <div class="sec-bar"><span>PANEL</span><span>05 // SHELL</span></div>
@@ -469,12 +475,15 @@
         </div>
         <p class="term-hint reveal">Try <button type="button" class="chip-cmd" data-cmd="help">help</button><button type="button" class="chip-cmd" data-cmd="neofetch">neofetch</button><button type="button" class="chip-cmd" data-cmd="kubectl get pods">kubectl get pods</button><button type="button" class="chip-cmd" data-cmd="boost">boost</button><button type="button" class="chip-cmd" data-cmd="sudo hire-me">sudo hire-me</button></p>
       </div>
+      </div>
+      </div>
     </section>
 
     <!-- ============================================================ CONTACT -->
-    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">06</span><span>//</span><span class="b-name">CONTACT</span><span>···</span><span class="b-cmd">$ mail -s "hello"</span><span>···</span><span>opening channel</span><span>···</span><span class="b-ok">[ OK ] inbox open</span><span>···</span><span class="b-no">06</span><span>//</span><span class="b-name">CONTACT</span><span>···</span><span class="b-cmd">$ mail -s "hello"</span><span>···</span><span>opening channel</span><span>···</span><span class="b-ok">[ OK ] inbox open</span><span>···</span><span class="b-no">06</span><span>//</span><span class="b-name">CONTACT</span><span>···</span><span class="b-cmd">$ mail -s "hello"</span><span>···</span><span>opening channel</span><span>···</span><span class="b-ok">[ OK ] inbox open</span><span>···</span><span class="b-no">06</span><span>//</span><span class="b-name">CONTACT</span><span>···</span><span class="b-cmd">$ mail -s "hello"</span><span>···</span><span>opening channel</span><span>···</span><span class="b-ok">[ OK ] inbox open</span><span>···</span></div></div>
 
-    <section class="section section-contact" id="contact" aria-labelledby="contact-title">
+    <section class="stage section section-contact" id="contact" data-name="CONTACT" data-title="Contact" aria-labelledby="contact-title">
+      <div class="stage-panel panel">
+      <div class="stage-scroll" tabindex="-1">
       <div class="wrap">
         <header class="sec-head reveal">
           <div class="sec-bar"><span>PANEL</span><span>06 // CONTACT</span></div>
@@ -516,20 +525,48 @@
           </form>
         </div>
       </div>
+      <footer class="footer">
+        <div class="wrap">
+          <p class="footer-cmd"><span class="p-user">ilyass@1337</span><span class="p-path">&nbsp;~&nbsp;$</span>&nbsp;exit<span class="caret" aria-hidden="true"></span></p>
+          <p class="footer-msg">[ connection to ilyass@1337 closed ] thanks for stopping by.</p>
+          <div class="footer-row">
+            <span>© <span id="year">2026</span> Ilyass Bougajdi · built by hand, no frameworks</span>
+            <span>session uptime <span id="uptime">00:00</span></span>
+            <a href="#top">back to the start ↑</a>
+          </div>
+        </div>
+      </footer>
+      </div>
+      </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="wrap">
-      <p class="footer-cmd"><span class="p-user">ilyass@1337</span><span class="p-path">&nbsp;~&nbsp;$</span>&nbsp;exit<span class="caret" aria-hidden="true"></span></p>
-      <p class="footer-msg">[ connection to ilyass@1337 closed ] thanks for stopping by.</p>
-      <div class="footer-row">
-        <span>© <span id="year">2026</span> Ilyass Bougajdi · built by hand, no frameworks</span>
-        <span>session uptime <span id="uptime">00:00</span></span>
-        <a href="#top">back to top ↑</a>
-      </div>
-    </div>
-  </footer>
+  <!-- dashboard: stays put while the world moves -->
+  <div class="district" id="district" aria-hidden="true">
+    <span class="district-sub">entering district</span>
+    <span class="district-no" id="district-no">01</span>
+    <span class="district-name" id="district-name">WHOAMI</span>
+  </div>
+
+  <div class="hud-speed" aria-hidden="true">
+    <div class="hud-speed-head"><span>VELOCITY</span><span><span class="gear" id="gear">D</span> · km/h</span></div>
+    <div class="hud-speed-val"><span id="speedo">088</span></div>
+    <div class="hud-speed-track"><span id="speedo-bar"></span></div>
+    <div class="hud-speed-hint">hold <kbd>space</kbd> or <kbd>→</kbd> to boost</div>
+  </div>
+  <button class="boost-btn" id="boost" type="button" aria-label="Boost the car (hold)">BOOST</button>
+
+  <div class="drive-ctl" id="drive-ctl">
+    <button class="dc-btn" id="dc-prev" type="button" aria-label="Previous district">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+    </button>
+    <p class="dc-now" aria-hidden="true"><span class="dc-no" id="dc-no">00</span><span class="dc-name" id="dc-name">START</span><span class="dc-hint">scroll to drive</span></p>
+    <button class="dc-btn" id="dc-next" type="button" aria-label="Next district">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+  </div>
+  <p class="sr-only" id="drive-live" aria-live="polite"></p>
+
 
   <!-- command palette -->
   <div class="palette" id="palette" hidden>
@@ -543,8 +580,9 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/scene.js?v=20261009175726" defer></script>
-  <script src="js/main.js?v=20261009175726" defer></script>
-  <script src="js/motion.js?v=20261009175726" defer></script>
+  <script src="js/scene.js?v=20261013" defer></script>
+  <script src="js/main.js?v=20261013" defer></script>
+  <script src="js/drive.js?v=20261013" defer></script>
+  <script src="js/motion.js?v=20261013" defer></script>
 </body>
 </html>
