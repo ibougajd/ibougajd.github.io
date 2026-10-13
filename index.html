@@ -1,391 +1,550 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ilyass</title>
-    <link rel="stylesheet" href="portfolio.css?v=7">
-    <link rel="stylesheet" href="terminal.css?v=7">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ilyass Bougajdi — DevOps Engineer</title>
+  <meta name="description" content="Ilyass Bougajdi — DevOps engineer from 1337 (UM6P). Kubernetes, GitOps with ArgoCD, CI/CD and observability with ELK, Prometheus and Grafana.">
+  <meta name="theme-color" content="#05090b">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ilyass Bougajdi — DevOps Engineer">
+  <meta property="og:description" content="Infrastructure that deploys itself, heals itself, and tells you when something's wrong.">
+  <meta property="og:image" content="https://ibougajd.github.io/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20261009175726">
+  <script>
+    (function () {
+      var d = document.documentElement, booted = null;
+      d.classList.add('js');
+      try { booted = sessionStorage.getItem('booted'); } catch (e) {}
+      var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!calm && 'IntersectionObserver' in window) d.classList.add('motion');
+      if (!booted && !calm) d.classList.add('booting');
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Ilyass Bougajdi",
+    "jobTitle": "DevOps Engineer",
+    "address": { "@type": "PostalAddress", "addressLocality": "Marrakesh", "addressCountry": "MA" },
+    "alumniOf": "1337 Coding School (UM6P) — 42 Network",
+    "sameAs": ["https://github.com/ibougajd", "https://www.linkedin.com/in/ilyass-bougajdi"]
+  }
+  </script>
 </head>
-
 <body>
-    <!-- Animated Background Sun -->
-    <canvas id="bg-canvas" aria-hidden="true"></canvas>
-    <!-- Custom Cursor -->
-    <div class="cursor-dot" data-cursor-dot></div>
-    <div class="cursor-outline" data-cursor-outline></div>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-    <!-- Fixed Brand Logo -->
-    <a href="#" class="fixed-logo" aria-label="Ilyass Bougajdi">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="4.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <!-- Stylized I -->
-            <line x1="14" y1="12" x2="14" y2="48"></line>
-            <!-- Stylized B -->
-            <path d="M26 12h10a10 10 0 0 1 0 20h-8"></path>
-            <path d="M28 32h10a9 9 0 0 1 0 18h-11v-20"></path> <!-- Connected spine logic -->
-        </svg>
-        <span class="logo-text">Ilyass Bougajdi</span>
+  <!-- boot sequence (first visit per session, skippable) -->
+  <div class="boot" id="boot" aria-hidden="true">
+    <pre class="boot-log" id="boot-log"></pre>
+    <div class="boot-bar"><span id="boot-bar"></span></div>
+    <p class="boot-skip">press any key to skip</p>
+  </div>
+
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <div class="bg-grid" id="bg-grid" aria-hidden="true"></div>
+
+  <nav class="route" id="route" aria-label="Page sections">
+    <span class="route-label" id="route-label" aria-hidden="true">00 // START</span>
+    <div class="route-track" aria-hidden="true"><span class="route-fill" id="route-fill"></span></div>
+    <ol class="route-stops">
+      <li><a href="#about" data-stop="about" aria-label="About"><span>01</span></a></li>
+      <li><a href="#work" data-stop="work" aria-label="Projects"><span>02</span></a></li>
+      <li><a href="#stack" data-stop="stack" aria-label="Tech stack"><span>03</span></a></li>
+      <li><a href="#journey" data-stop="journey" aria-label="Journey"><span>04</span></a></li>
+      <li><a href="#shell" data-stop="shell" aria-label="Shell"><span>05</span></a></li>
+      <li><a href="#contact" data-stop="contact" aria-label="Contact"><span>06</span></a></li>
+    </ol>
+    <svg class="route-car" id="route-car" width="30" height="9" viewBox="0 0 440 130" aria-hidden="true"><path d="M10,92 L2,72 L4,52 L62,46 Q102,42 130,20 L196,14 Q236,17 288,46 L400,58 Q426,62 434,76 L430,88 L418,94 Z"/><circle cx="96" cy="96" r="30"/><circle cx="338" cy="96" r="30"/></svg>
+    <span class="route-pct" id="route-pct" aria-hidden="true">0%</span>
+  </nav>
+
+  <header class="topbar" id="topbar">
+    <a class="brand" href="#top" aria-label="Ilyass Bougajdi — back to top">
+      <img src="assets/avatar.jpg" alt="" width="34" height="34">
+      <span class="brand-text">ilyass<span class="dim">@1337</span></span>
     </a>
-
-    </a>
-
-
-
-    <!-- Floating Dock Navigation -->
-    <nav class="dock-nav">
-        <ul class="dock-links">
-            <li><a href="#home" class="active">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#projects">Work</a></li>
-            <li><a href="#articles">Articles</a></li>
-        </ul>
-        <div class="dock-divider"></div>
-        <div class="dock-actions">
-            <a href="#contact" class="dock-cta">Contact</a>
-        </div>
+    <nav class="nav" id="nav" aria-label="Primary">
+      <a href="#about" data-nav="about"><span class="nav-no">01</span>whoami</a>
+      <a href="#work" data-nav="work"><span class="nav-no">02</span>projects</a>
+      <a href="#stack" data-nav="stack"><span class="nav-no">03</span>stack</a>
+      <a href="#journey" data-nav="journey"><span class="nav-no">04</span>git log</a>
+      <a href="#shell" data-nav="shell"><span class="nav-no">05</span>shell</a>
+      <a href="#contact" data-nav="contact"><span class="nav-no">06</span>contact</a>
     </nav>
-
-    <header id="home" class="hero">
-        <div class="hero-content">
-            <p class="greeting">Hello, I'm</p>
-            <h1 class="glitch-text" data-text="Ilyass">Ilyass</h1>
-            <h2 class="subtitle">DevOps Engineer</h2>
-            <p class="tagline">Automating infrastructure, ensuring reliability, and building scalable systems.</p>
-            <div class="hero-actions">
-                <a href="#projects" class="cta-button">View Work</a>
-                <a href="ilyass.pdf?v=2" class="cta-button outline-button" target="_blank" rel="noopener noreferrer">Download CV</a>
-            </div>
-            <div class="terminal-loader" id="terminal-loader" aria-hidden="true">
-                <!-- 3D Coder Animation -->
-                <div class="coder-animation">
-                    <div class="coder-head"></div>
-                    <div class="coder-body"></div>
-                    <div class="coder-laptop">
-                        <div class="laptop-screen"></div>
-                        <div class="laptop-keyboard"></div>
-                    </div>
-                </div>
-                
-                <div class="terminal-header">
-                    <div class="terminal-controls">
-                        <div class="control close"></div>
-                        <div class="control minimize"></div>
-                        <div class="control maximize"></div>
-                    </div>
-                </div>
-                <div class="text-body" id="terminal-body">
-                    <div id="typewriter-text" class="console-text"></div>
-                    <div class="terminal-input-line" style="display: none;">
-                        <span class="prompt-symbol">ilyass@devops:~$</span>
-                        <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" spellcheck="false" aria-label="Terminal Input">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <section id="about" class="section">
-        <div class="container">
-            <h2 class="section-title">01. About Me</h2>
-            <div class="about-grid">
-                <div class="about-text">
-                    <p>
-                        Hello! I'm <strong>Ilyass</strong>, a DevOps Engineer who bridges the gap between complex
-                        development challenges and reliable operational systems. My background in
-                        <strong>low-level C programming</strong> at 1337 (42 Network) gave me a deep
-                        understanding of memory management and system internals, which I now apply to building
-                        <strong>resilient cloud infrastructure</strong>.
-                    </p>
-                    <p>
-                        I don't just maintain servers; I <strong>automate ecosystems</strong>. Whether it's
-                        containerizing applications with Docker, orchestrating clusters with Kubernetes, or
-                        building rigorous CI/CD pipelines, my goal is always the same: <span
-                            class="highlight">Efficiency, Security, and Scalability.</span>
-                    </p>
-                    <div class="about-tags">
-                        <span class="tag">#ProblemSolver</span>
-                        <span class="tag">#AutomationFirst</span>
-                        <span class="tag">#LinuxNative</span>
-                    </div>
-                </div>
-                <div class="about-terminal-wrapper">
-                    <div class="terminal-header">
-                        <div class="terminal-dots">
-                            <span class="dot red"></span>
-                            <span class="dot yellow"></span>
-                            <span class="dot green"></span>
-                        </div>
-                        <span class="terminal-title">user_profile.json</span>
-                    </div>
-                    <div class="terminal-body" id="about-terminal-body" style="height: 250px; overflow-y: auto; padding: 15px;">
-                        <div id="about-terminal-content">
-                            <!-- Content will be syntax highlighted via CSS -->
-                            <pre><code><span class="key">"name"</span>: <span class="string">"Ilyass Bougajdi"</span>,
-    <span class="key">"role"</span>: <span class="string">"DevOps Engineer"</span>,
-    <span class="key">"status"</span>: <span class="string">"Open to Opportunities"</span>,
-    <span class="key">"fuel"</span>: <span class="string">"Coffee & Code"</span>,
-    <span class="key">"focus"</span>: [
-      <span class="string">"Infrastructure-as-Code"</span>,
-      <span class="string">"Cloud Native"</span>,
-      <span class="string">"Performance Tuning"</span>
-    ]</code></pre>
-                        </div>
-                        <div class="terminal-input-line" id="about-terminal-input-line" style="display: flex; gap: 8px; margin-top: 10px; width: 100%;">
-                            <span class="prompt-symbol" style="color: var(--accent);">ilyass@devops:~$</span>
-                            <input type="text" id="about-terminal-input" class="terminal-input" autocomplete="off" spellcheck="false" aria-label="Terminal Input" style="background: transparent; border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9rem; flex-grow: 1; outline: none;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </section>
-
-    <section id="skills" class="section">
-        <div class="container">
-            <h2 class="section-title">02. Technologies</h2>
-            <div class="skills-wrapper">
-                <div class="skill-category">
-                    <h3>Cloud & Orchestration</h3>
-                    <div class="skill-list">
-                        <span>Oracle Cloud (OCI)</span>
-                        <span>Kubernetes</span>
-                        <span>Docker</span>
-                        <span>Helm</span>
-                        <span>ArgoCD</span>
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <h3>Observability & CI/CD</h3>
-                    <div class="skill-list">
-                        <span>ELK Stack</span>
-                        <span>Prometheus</span>
-                        <span>Grafana</span>
-                        <span>GitHub Actions</span>
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <h3>Security & Networking</h3>
-                    <div class="skill-list">
-                        <span>Traefik Ingress</span>
-                        <span>Nginx</span>
-                        <span>SOPS</span>
-                        <span>TCP/IP</span>
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <h3>Languages</h3>
-                    <div class="skill-list">
-                        <span>C / C++</span>
-                        <span>Python</span>
-                        <span>Go</span>
-                        <span>SQL</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="projects" class="section">
-        <div class="container">
-            <h2 class="section-title">03. Featured Projects</h2>
-            <div class="projects-grid container-registry">
-                <!-- Project 1: ft_transcendence -->
-                <article class="service-card" data-project-id="transcendence">
-                    <div class="service-header">
-                        <span class="status-indicator"></span>
-                        <h3 class="service-name">~/projects/ft_transcendence</h3>
-                    </div>
-                    <div class="service-body">
-                        <div class="code-block">
-                            <span class="key">stack:</span> <span class="value">[NestJS, React, Postgres, Kubernetes, ArgoCD]</span><br>
-                            <span class="key">type:</span> <span class="value">"Cloud-Native GitOps Platform"</span><br>
-                            <span class="key">deploy:</span> <span class="value">"K3d on Oracle Cloud (OCI)"</span><br>
-                            <span class="key">highlights:</span> <span class="value">[GitOps CI/CD, ELK Observability, SOPS Secrets]</span>
-                        </div>
-                        <p class="service-desc">
-                            Microservices Pong platform with real-time chat and matchmaking, deployed via ArgoCD with full GitOps automation on OCI.
-                        </p>
-                    </div>
-                    <div class="service-footer">
-                        <a href="#" class="cmd-btn" onclick="event.stopPropagation()">
-                            <span class="prompt">$></span> git clone
-                        </a>
-                        <a href="#" class="cmd-btn" onclick="event.stopPropagation()">
-                            <span class="prompt">$></span> kubectl get pods
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Project 2: ft_irc -->
-                <article class="service-card" data-project-id="irc">
-                    <div class="service-header">
-                        <span class="status-indicator"></span>
-                        <h3 class="service-name">~/projects/ft_irc</h3>
-                    </div>
-                    <div class="service-body">
-                        <div class="code-block">
-                            <span class="key">lang:</span> <span class="value">"C++"</span><br>
-                            <span class="key">type:</span> <span class="value">"IRC Server"</span><br>
-                            <span class="key">io:</span> <span class="value">"Non-blocking (poll)"</span><br>
-                            <span class="key">protocol:</span> <span class="value">"TCP/IP"</span>
-                        </div>
-                        <p class="service-desc">
-                            Fully functional IRC server from scratch. Handles concurrent clients via non-blocking sockets and poll().
-                        </p>
-                    </div>
-                    <div class="service-footer">
-                        <a href="#" class="cmd-btn" onclick="event.stopPropagation()">
-                            <span class="prompt">$></span> git clone
-                        </a>
-                        <a href="#" class="cmd-btn" onclick="event.stopPropagation()">
-                            <span class="prompt">$></span> ./ircserv
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Project 3: Inception -->
-                <article class="service-card" data-project-id="inception">
-                    <div class="service-header">
-                        <span class="status-indicator"></span>
-                        <h3 class="service-name">~/projects/inception</h3>
-                    </div>
-                    <div class="service-body">
-                        <div class="code-block">
-                            <span class="key">stack:</span> <span class="value">[Docker, Nginx, MariaDB, WordPress]</span><br>
-                            <span class="key">role:</span> <span class="value">"System Admin"</span><br>
-                            <span class="key">security:</span> <span class="value">"Strict"</span><br>
-                            <span class="key">uptime:</span> <span class="value">"100% Reproducible"</span>
-                        </div>
-                        <p class="service-desc">
-                            Strictly containerized infrastructure on Debian from scratch with private networking, persistent volumes, and optimized Dockerfiles.
-                        </p>
-                    </div>
-                    <div class="service-footer">
-                        <a href="#" class="cmd-btn" onclick="event.stopPropagation()">
-                            <span class="prompt">$></span> git clone
-                        </a>
-                        <a href="#" class="cmd-btn" onclick="event.stopPropagation()">
-                            <span class="prompt">$></span> docker compose up
-                        </a>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <section id="articles" class="section">
-        <div class="container">
-            <h2 class="section-title">03.5. Tech Articles</h2>
-            <div class="projects-grid container-registry">
-                <!-- Article 1 -->
-                <article class="service-card">
-                    <div class="service-header">
-                        <h3 class="service-name">Automating K8s Deployments</h3>
-                    </div>
-                    <div class="service-body">
-                        <p class="service-desc">
-                            A deep dive into setting up GitOps pipelines with ArgoCD and Kubernetes.
-                        </p>
-                    </div>
-                    <div class="service-footer">
-                        <a href="#" class="cmd-btn">
-                            <span class="prompt">$></span> cat article.md
-                        </a>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <section class="section" style="padding-bottom: 0;">
-        <div class="container">
-            <h2 class="section-title" style="justify-content: center;">03.5. Infrastructure Map</h2>
-            <p style="color: var(--text-secondary); text-align: center; max-width: 600px; margin: 0 auto 20px auto;">
-                A live 3D visualization of my deployed services and their orchestration.
-            </p>
-        </div>
-    </section>
-
-    <section id="devops-visual" style="position: relative; height: 500px; width: 100%; overflow: hidden;">
-        <div id="three-container" style="width: 100%; height: 100%;"></div>
-    </section>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
-    <section id="contact" class="section">
-        <div class="container contact-container">
-            <h2 class="section-title">05. Get In Touch</h2>
-            <p class="contact-text">Currently looking for new opportunities. Whether you have a question or just want to
-                say hi, I'll try my best to get back to you!</p>
-            
-            <form class="contact-form" action="https://formspree.io/f/xqeydvoq" method="POST">
-                <div class="form-group">
-                    <label for="name" class="visually-hidden">Name</label>
-                    <input type="text" id="name" name="name" placeholder="Name" required>
-                </div>
-                <div class="form-group">
-                    <label for="email" class="visually-hidden">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Email" required>
-                </div>
-                <div class="form-group">
-                    <label for="message" class="visually-hidden">Message</label>
-                    <textarea id="message" name="message" rows="5" placeholder="Message" required></textarea>
-                </div>
-                <button type="submit" class="cta-button submit-btn">Send Message</button>
-            </form>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="social-icons" id="social-icons-container">
-            <a href="https://github.com" target="_blank" aria-label="GitHub" class="social-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path
-                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
-                    </path>
-                </svg>
-            </a>
-            <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn" class="social-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                    <rect x="2" y="9" width="4" height="12"></rect>
-                    <circle cx="4" cy="4" r="2"></circle>
-                </svg>
-            </a>
-        </div>
-        <p>Built by Ilyass &copy; 2025</p>
-    </footer>
-
-    <!-- DevOps Project Modal -->
-    <div id="project-modal" class="modal-backdrop" aria-hidden="true">
-        <div class="modal-terminal">
-            <div class="terminal-header">
-                <div class="terminal-dots">
-                    <span class="dot red" id="modal-close-dot" style="cursor: pointer;"></span>
-                    <span class="dot yellow"></span>
-                    <span class="dot green"></span>
-                </div>
-                <span class="terminal-title" id="modal-title">~/projects/</span>
-            </div>
-            <div class="modal-body text-body" style="background-color: #0a192f; border-radius: 0 0 8px 8px;">
-                <div id="modal-content" class="console-text" style="font-family: var(--font-mono); font-size: 0.9rem; color: #a8b2d1; white-space: pre-wrap;"></div>
-                <div class="terminal-input-line" style="display: flex; gap: 8px; margin-top: 10px; width: 100%;">
-                    <span class="prompt-symbol" style="color: var(--accent);">ilyass@devops:~$</span>
-                    <input type="text" id="modal-terminal-input" class="terminal-input" autocomplete="off" spellcheck="false" aria-label="Terminal Input" style="background: transparent; border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9rem; flex-grow: 1; outline: none;">
-                </div>
-            </div>
-        </div>
+    <div class="top-actions">
+      <span class="clock" title="My local time (Morocco)"><span class="clock-label">MA</span> <span id="clock">--:--:--</span></span>
+      <button class="kbd-btn" id="open-palette" type="button" aria-label="Open command palette"><kbd>Ctrl</kbd><kbd>K</kbd></button>
+      <a class="btn btn-sm" href="assets/ilyass-bougajdi-cv.pdf" download>
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>CV
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+  </header>
 
-    <script src="script.js?v=4"></script>
+  <main id="main">
+    <!-- ============================================================ HERO -->
+    <section class="hero" id="top" aria-label="Introduction">
+      <canvas id="scene" aria-hidden="true"></canvas>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-fade" id="hero-fade" aria-hidden="true"></div>
+
+      <div class="hero-inner wrap">
+        <p class="prompt"><span class="p-user">ilyass@1337</span><span class="p-path">&nbsp;~&nbsp;$</span>&nbsp;whoami<span class="caret" aria-hidden="true"></span></p>
+        <h1 class="hero-title" data-text="ILYASS BOUGAJDI"><span>ILYASS</span> <span>BOUGAJDI</span></h1>
+        <p class="hero-role">DevOps Engineer <span class="sep">//</span> Cloud-Native <span class="sep">//</span> Observability</p>
+        <p class="hero-pitch">I build infrastructure that deploys itself, heals itself, and tells you when something's wrong&nbsp;— before your users do.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#work">
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>View projects
+          </a>
+          <a class="btn" href="#shell" data-focus-shell>
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 7 5 5-5 5M12 17h7"/></svg>Open terminal
+          </a>
+          <a class="btn btn-ghost" href="assets/ilyass-bougajdi-cv.pdf" download>
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>Download CV
+          </a>
+        </div>
+        <ul class="hero-meta">
+          <li><span class="dot dot-green" aria-hidden="true"></span>online</li>
+          <li>Marrakesh, Morocco</li>
+          <li>1337 (UM6P) · 42 Network</li>
+        </ul>
+      </div>
+
+      <div class="hud-speed" aria-hidden="true">
+        <div class="hud-speed-head"><span>VELOCITY</span><span>km/h</span></div>
+        <div class="hud-speed-val"><span id="speedo">088</span></div>
+        <div class="hud-speed-track"><span id="speedo-bar"></span></div>
+        <div class="hud-speed-hint">hold <kbd>space</kbd> or <kbd>→</kbd> to boost</div>
+      </div>
+      <button class="boost-btn" id="boost" type="button" aria-label="Boost the car (hold)">BOOST</button>
+
+      <a class="scroll-hint" href="#about" aria-label="Scroll to about">
+        <span>scroll</span><span class="scroll-line" aria-hidden="true"></span>
+      </a>
+    </section>
+
+    <!-- ============================================================ ABOUT -->
+    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">01</span><span>//</span><span class="b-name">WHOAMI</span><span>···</span><span class="b-cmd">$ cat about.md</span><span>···</span><span>loading profile</span><span>···</span><span class="b-ok">[ OK ] identity verified</span><span>···</span><span class="b-no">01</span><span>//</span><span class="b-name">WHOAMI</span><span>···</span><span class="b-cmd">$ cat about.md</span><span>···</span><span>loading profile</span><span>···</span><span class="b-ok">[ OK ] identity verified</span><span>···</span><span class="b-no">01</span><span>//</span><span class="b-name">WHOAMI</span><span>···</span><span class="b-cmd">$ cat about.md</span><span>···</span><span>loading profile</span><span>···</span><span class="b-ok">[ OK ] identity verified</span><span>···</span><span class="b-no">01</span><span>//</span><span class="b-name">WHOAMI</span><span>···</span><span class="b-cmd">$ cat about.md</span><span>···</span><span>loading profile</span><span>···</span><span class="b-ok">[ OK ] identity verified</span><span>···</span></div></div>
+
+    <section class="section" id="about" aria-labelledby="about-title">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <div class="sec-bar"><span>PANEL</span><span>01 // WHOAMI</span></div>
+          <div class="sec-row">
+            <h2 id="about-title"><span class="blk" aria-hidden="true"></span>About</h2>
+            <code class="sec-cmd">cat about.md</code>
+          </div>
+        </header>
+
+        <div class="about-grid">
+          <div class="about-text reveal">
+            <p class="lead">I'm Ilyass, a DevOps engineer from Morocco, trained at <strong>1337 Coding School (UM6P)</strong>, part of the 42 Network.</p>
+            <p>I started deep in C: memory, processes, sockets, a shell and an IRC server written from scratch. That low-level foundation shapes how I approach infrastructure today: understand the system first, then automate it.</p>
+            <p>My work now lives in <strong>Kubernetes clusters, GitOps pipelines and observability stacks</strong>. I like systems where every change goes through Git, every deploy is reproducible, and every failure leaves a trace you can follow.</p>
+            <blockquote class="motto">
+              <span class="motto-cmd">$ echo $MOTTO</span>
+              "I don't just want to deploy code; I want to understand exactly how it lives, scales, and stays healthy in production."
+            </blockquote>
+          </div>
+
+          <aside class="panel profile reveal" aria-label="Profile summary">
+            <div class="panel-bar"><span>SYSTEM PROFILE</span><span>id: 1337</span></div>
+            <div class="profile-top">
+              <img src="assets/avatar.jpg" alt="Ilyass Bougajdi's avatar: the initials IB in a HUD ring" width="88" height="88" loading="lazy">
+              <div>
+                <p class="profile-name">Ilyass Bougajdi</p>
+                <p class="profile-role">DevOps Engineer</p>
+              </div>
+            </div>
+            <dl class="kv">
+              <div><dt>BASE</dt><dd>Marrakesh · Morocco</dd></div>
+              <div><dt>SCHOOL</dt><dd>1337 (UM6P) · 42 Network</dd></div>
+              <div><dt>FOCUS</dt><dd>GitOps · K8s · Observability</dd></div>
+              <div><dt>CLOUD</dt><dd>Oracle Cloud (OCI)</dd></div>
+              <div><dt>LANGS</dt><dd>Arabic · English · French</dd></div>
+              <div><dt>STATUS</dt><dd class="ok"><span class="dot dot-green" aria-hidden="true"></span>ONLINE</dd></div>
+            </dl>
+            <div class="signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          </aside>
+        </div>
+
+        <h3 class="sub-head reveal"><span>//</span> how I work</h3>
+        <ul class="principles">
+          <li class="panel principle reveal">
+            <code>git push</code>
+            <h4>Git is the only deploy button</h4>
+            <p>Declarative manifests, ArgoCD syncing them, zero drift between the repo and the cluster.</p>
+          </li>
+          <li class="panel principle reveal">
+            <code>kubectl top</code>
+            <h4>Not monitored = not in production</h4>
+            <p>Logs, metrics and dashboards ship with the service, not after the first outage.</p>
+          </li>
+          <li class="panel principle reveal">
+            <code>sops -e</code>
+            <h4>Secrets never touch Git in plaintext</h4>
+            <p>Encrypted at rest with SOPS, decrypted only inside the deploy pipeline.</p>
+          </li>
+          <li class="panel principle reveal">
+            <code>make re</code>
+            <h4>Reproducible or it didn't happen</h4>
+            <p>Containers and one-command rebuilds: if it can't be recreated from scratch, it's a liability.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ WORK -->
+    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">02</span><span>//</span><span class="b-name">PROJECTS</span><span>···</span><span class="b-cmd">$ git clone --recursive</span><span>···</span><span>pulling repositories</span><span>···</span><span class="b-ok">[ OK ] builds passing</span><span>···</span><span class="b-no">02</span><span>//</span><span class="b-name">PROJECTS</span><span>···</span><span class="b-cmd">$ git clone --recursive</span><span>···</span><span>pulling repositories</span><span>···</span><span class="b-ok">[ OK ] builds passing</span><span>···</span><span class="b-no">02</span><span>//</span><span class="b-name">PROJECTS</span><span>···</span><span class="b-cmd">$ git clone --recursive</span><span>···</span><span>pulling repositories</span><span>···</span><span class="b-ok">[ OK ] builds passing</span><span>···</span><span class="b-no">02</span><span>//</span><span class="b-name">PROJECTS</span><span>···</span><span class="b-cmd">$ git clone --recursive</span><span>···</span><span>pulling repositories</span><span>···</span><span class="b-ok">[ OK ] builds passing</span><span>···</span></div></div>
+
+    <section class="section" id="work" aria-labelledby="work-title">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <div class="sec-bar"><span>PANEL</span><span>02 // PROJECTS</span></div>
+          <div class="sec-row">
+            <h2 id="work-title"><span class="blk" aria-hidden="true"></span>Selected work</h2>
+            <code class="sec-cmd">ls -la ~/projects</code>
+          </div>
+        </header>
+
+        <!-- featured case study -->
+        <article class="panel case reveal" aria-labelledby="case-title">
+          <div class="panel-bar"><span><span class="dot dot-green" aria-hidden="true"></span> FEATURED · CASE STUDY</span><span>2024 — 2026</span></div>
+          <div class="case-grid">
+            <div class="case-text">
+              <p class="case-path">~/projects/ft_transcendence</p>
+              <h3 id="case-title">A cloud-native GitOps platform on Oracle Cloud</h3>
+              <p>A microservices Pong platform with real-time chat and matchmaking. My part was everything between <code>git push</code> and a healthy pod: the cluster, the pipeline, the secrets, the routing and the monitoring.</p>
+              <ul class="case-points">
+                <li><strong>Cluster</strong> — microservices on a K3d Kubernetes cluster hosted on OCI, templated and managed with Helm.</li>
+                <li><strong>GitOps</strong> — ArgoCD continuously syncs the cluster with the repo: zero-drift, no manual <code>kubectl apply</code>.</li>
+                <li><strong>CI</strong> — GitHub Actions builds the Docker images and pushes them to GHCR.</li>
+                <li><strong>Secrets</strong> — cluster secrets and TLS certificates encrypted with SOPS, injected only at deploy time.</li>
+                <li><strong>Edge &amp; observability</strong> — Traefik ingress for routing, ELK and Grafana for real-time monitoring.</li>
+              </ul>
+              <ul class="chips" aria-label="Stack">
+                <li>Kubernetes</li><li>K3d</li><li>OCI</li><li>ArgoCD</li><li>Helm</li><li>GitHub Actions</li><li>GHCR</li><li>SOPS</li><li>Traefik</li><li>ELK</li><li>Grafana</li><li>NestJS</li><li>React</li><li>PostgreSQL</li>
+              </ul>
+              <div class="case-links">
+                <a class="btn btn-primary" href="https://github.com/ibougajd/ft_transcendence" target="_blank" rel="noopener">
+                  <svg class="ic ic-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-github"/></svg>View source
+                </a>
+              </div>
+            </div>
+
+            <figure class="diagram" aria-label="Deployment pipeline: git push to GitHub Actions to GHCR to ArgoCD, which syncs a K3d cluster on Oracle Cloud. Traefik routes to the web, API and database services; logs flow to ELK and Grafana; SOPS supplies encrypted secrets to ArgoCD.">
+              <svg viewBox="0 0 640 420" id="pipeline" role="img" aria-hidden="true">
+                <defs>
+                  <pattern id="dgrid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="#1b2f33" stroke-width=".6"/></pattern>
+                  <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 8 4 0 8z" fill="#5f8588"/></marker>
+                </defs>
+                <rect width="640" height="420" fill="url(#dgrid)" opacity=".7"/>
+
+                <!-- CI lane -->
+                <g style="--s:0" class="d-node"><rect x="16" y="28" width="104" height="52"/><text x="68" y="51">git push</text><text x="68" y="68" class="d-sub">main</text></g>
+                <g style="--s:2" class="d-node"><rect x="156" y="28" width="128" height="52"/><text x="220" y="51">GitHub Actions</text><text x="220" y="68" class="d-sub">build · test</text></g>
+                <g style="--s:4" class="d-node"><rect x="320" y="28" width="104" height="52"/><text x="372" y="51">GHCR</text><text x="372" y="68" class="d-sub">images</text></g>
+                <g style="--s:6" class="d-node d-hot"><rect x="460" y="28" width="164" height="52"/><text x="542" y="51">ArgoCD</text><text x="542" y="68" class="d-sub">sync · self-heal</text></g>
+
+                <path style="--s:1" class="d-link" d="M120 54H156" marker-end="url(#arrow)"/>
+                <path style="--s:3" class="d-link" d="M284 54H320" marker-end="url(#arrow)"/>
+                <path style="--s:5" class="d-link" d="M424 54H460" marker-end="url(#arrow)"/>
+
+                <!-- secrets -->
+                <g style="--s:7" class="d-node d-pink"><rect x="320" y="108" width="104" height="40"/><text x="372" y="133">SOPS secrets</text></g>
+                <path style="--s:8" class="d-link d-link-pink" d="M424 128H542V80" marker-end="url(#arrow)"/>
+
+                <!-- cluster -->
+                <rect style="--s:9" class="d-cluster" x="16" y="176" width="608" height="228"/>
+                <text style="--s:9" class="d-cluster-label" x="30" y="198">K3d CLUSTER · ORACLE CLOUD (OCI)</text>
+                <path style="--s:10" class="d-link" d="M542 80V206" marker-end="url(#arrow)"/>
+
+                <g style="--s:11" class="d-node d-hot"><rect x="470" y="210" width="144" height="44"/><text x="542" y="237">Traefik ingress</text></g>
+                <g style="--s:13" class="d-node"><rect x="34" y="276" width="112" height="44"/><text x="90" y="297">web</text><text x="90" y="312" class="d-sub">React</text></g>
+                <g style="--s:13" class="d-node"><rect x="170" y="276" width="112" height="44"/><text x="226" y="297">api</text><text x="226" y="312" class="d-sub">NestJS</text></g>
+                <g style="--s:14" class="d-node"><rect x="306" y="276" width="112" height="44"/><text x="362" y="297">db</text><text x="362" y="312" class="d-sub">PostgreSQL</text></g>
+                <g style="--s:17" class="d-node d-green"><rect x="34" y="346" width="384" height="40"/><text x="226" y="371">ELK · Grafana — logs &amp; metrics</text></g>
+                <g style="--s:15" class="d-node"><rect x="470" y="276" width="144" height="110"/><text x="542" y="306">TLS</text><text x="542" y="324" class="d-sub">certs via SOPS</text><text x="542" y="350" class="d-sub">HTTPS-only</text><text x="542" y="366" class="d-sub">routing</text></g>
+
+                <path style="--s:12" class="d-link" d="M470 232H90V276" marker-end="url(#arrow)"/>
+                <path style="--s:12" class="d-link" d="M226 232V276" marker-end="url(#arrow)"/>
+                <path style="--s:14" class="d-link" d="M282 298H306" marker-end="url(#arrow)"/>
+                <path style="--s:16" class="d-link d-link-green" d="M90 320V346M226 320V346M362 320V346"/>
+
+                <!-- packets -->
+                <circle class="d-packet" r="4"><animateMotion dur="3.2s" repeatCount="indefinite" path="M68 54H542V232H226V298"/></circle>
+                <circle class="d-packet" r="4"><animateMotion dur="3.2s" begin="1.6s" repeatCount="indefinite" path="M68 54H542V232H90V298"/></circle>
+                <circle class="d-packet d-packet-pink" r="3.5"><animateMotion dur="2.4s" begin=".6s" repeatCount="indefinite" path="M372 128H542V80"/></circle>
+                <circle class="d-packet d-packet-green" r="3.5"><animateMotion dur="1.8s" repeatCount="indefinite" path="M226 320V366"/></circle>
+              </svg>
+              <figcaption><span class="dot dot-green" aria-hidden="true"></span> every change flows through Git — the cluster converges on its own</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <!-- filters -->
+        <div class="filters reveal" role="group" aria-label="Filter projects">
+          <button type="button" class="filter is-active" data-filter="all" aria-pressed="true">all</button>
+          <button type="button" class="filter" data-filter="infra" aria-pressed="false">infra</button>
+          <button type="button" class="filter" data-filter="systems" aria-pressed="false">systems</button>
+          <button type="button" class="filter" data-filter="graphics" aria-pressed="false">graphics</button>
+          <button type="button" class="filter" data-filter="design" aria-pressed="false">design</button>
+        </div>
+
+        <ul class="projects" id="projects">
+          <li class="panel project reveal" data-cat="infra">
+            <div class="project-bar"><span><span class="dot dot-green" aria-hidden="true"></span>running</span><span>2023</span></div>
+            <h3><span class="tilde">~/projects/</span>inception</h3>
+            <p>A containerized Nginx + WordPress + MariaDB stack built from Debian base images: custom Dockerfiles, a TLS-only Nginx entrypoint, a private network between services and persistent volumes.</p>
+            <ul class="chips"><li>Docker</li><li>Compose</li><li>Nginx</li><li>MariaDB</li><li>Debian</li></ul>
+            <a class="project-link" href="https://github.com/ibougajd/inception" target="_blank" rel="noopener"><span>$</span> git clone inception</a>
+          </li>
+          <li class="panel project reveal" data-cat="systems">
+            <div class="project-bar"><span><span class="dot dot-green" aria-hidden="true"></span>running</span><span>2024</span></div>
+            <h3><span class="tilde">~/projects/</span>ft_irc</h3>
+            <p>An IRC server written from scratch in C++: non-blocking sockets, <code>poll()</code> multiplexing for many concurrent clients, buffered I/O and RFC-style JOIN / PRIVMSG / KICK handling.</p>
+            <ul class="chips"><li>C++</li><li>TCP/IP</li><li>Sockets</li><li>poll()</li></ul>
+            <a class="project-link" href="https://github.com/ibougajd/ft_irc" target="_blank" rel="noopener"><span>$</span> git clone ft_irc</a>
+          </li>
+          <li class="panel project reveal" data-cat="systems">
+            <div class="project-bar"><span><span class="dot dot-green" aria-hidden="true"></span>running</span><span>C</span></div>
+            <h3><span class="tilde">~/projects/</span>minishell</h3>
+            <p>A Bash-like shell in C: lexer and parser, pipes, redirections and heredocs, environment variable expansion, builtins and signal handling.</p>
+            <ul class="chips"><li>C</li><li>Processes</li><li>Pipes</li><li>Signals</li></ul>
+            <a class="project-link" href="https://github.com/ibougajd/minishell" target="_blank" rel="noopener"><span>$</span> git clone minishell</a>
+          </li>
+          <li class="panel project reveal" data-cat="systems">
+            <div class="project-bar"><span><span class="dot dot-green" aria-hidden="true"></span>running</span><span>C</span></div>
+            <h3><span class="tilde">~/projects/</span>philosophers</h3>
+            <p>The dining philosophers problem with POSIX threads and mutexes: no data races, no deadlocks, and timing precise to the millisecond.</p>
+            <ul class="chips"><li>C</li><li>pthreads</li><li>Mutexes</li><li>Concurrency</li></ul>
+            <a class="project-link" href="https://github.com/ibougajd/Philosophers" target="_blank" rel="noopener"><span>$</span> git clone Philosophers</a>
+          </li>
+          <li class="panel project reveal" data-cat="graphics">
+            <div class="project-bar"><span><span class="dot dot-green" aria-hidden="true"></span>running</span><span>C</span></div>
+            <h3><span class="tilde">~/projects/</span>cub3d</h3>
+            <p>A raycasting engine inspired by Wolfenstein 3D, written in C with MiniLibX: DDA raycasting, textured walls, movement and collision.</p>
+            <ul class="chips"><li>C</li><li>Raycasting</li><li>MiniLibX</li><li>Math</li></ul>
+            <a class="project-link" href="https://github.com/ibougajd/cub3d" target="_blank" rel="noopener"><span>$</span> git clone cub3d</a>
+          </li>
+          <li class="panel project reveal" data-cat="graphics">
+            <div class="project-bar"><span><span class="dot dot-green" aria-hidden="true"></span>running</span><span>C</span></div>
+            <h3><span class="tilde">~/projects/</span>so_long</h3>
+            <p>A small 2D tile game in C with MiniLibX, with map parsing and a flood-fill check that every map is actually solvable.</p>
+            <ul class="chips"><li>C</li><li>MiniLibX</li><li>Flood fill</li></ul>
+            <a class="project-link" href="https://github.com/ibougajd/so_long" target="_blank" rel="noopener"><span>$</span> git clone so_long</a>
+          </li>
+          <li class="panel project reveal" data-cat="systems">
+            <div class="project-bar"><span><span class="dot dot-green" aria-hidden="true"></span>running</span><span>C++</span></div>
+            <h3><span class="tilde">~/projects/</span>cpp-modules</h3>
+            <p>The C++98 track: classes and the canonical form, inheritance and polymorphism, exceptions, templates, STL containers and algorithms.</p>
+            <ul class="chips"><li>C++98</li><li>OOP</li><li>Templates</li><li>STL</li></ul>
+            <a class="project-link" href="https://github.com/ibougajd/Cpp-Modules" target="_blank" rel="noopener"><span>$</span> git clone Cpp-Modules</a>
+          </li>
+          <li class="panel project reveal" data-cat="design">
+            <div class="project-bar"><span><span class="dot dot-green" aria-hidden="true"></span>running</span><span>2026</span></div>
+            <h3><span class="tilde">~/projects/</span>profile-hud</h3>
+            <p>My GitHub profile: an animated eDEX-style HUD (live terminal banner, cluster map, icon tiles) built entirely from hand-generated SVGs.</p>
+            <ul class="chips"><li>SVG</li><li>SMIL</li><li>Python</li><li>Design</li></ul>
+            <a class="project-link" href="https://github.com/ibougajd" target="_blank" rel="noopener"><span>$</span> open github.com/ibougajd</a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ STACK -->
+    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">03</span><span>//</span><span class="b-name">STACK</span><span>···</span><span class="b-cmd">$ stack --list --all</span><span>···</span><span>scanning toolchain</span><span>···</span><span class="b-ok">[ OK ] 40 modules loaded</span><span>···</span><span class="b-no">03</span><span>//</span><span class="b-name">STACK</span><span>···</span><span class="b-cmd">$ stack --list --all</span><span>···</span><span>scanning toolchain</span><span>···</span><span class="b-ok">[ OK ] 40 modules loaded</span><span>···</span><span class="b-no">03</span><span>//</span><span class="b-name">STACK</span><span>···</span><span class="b-cmd">$ stack --list --all</span><span>···</span><span>scanning toolchain</span><span>···</span><span class="b-ok">[ OK ] 40 modules loaded</span><span>···</span><span class="b-no">03</span><span>//</span><span class="b-name">STACK</span><span>···</span><span class="b-cmd">$ stack --list --all</span><span>···</span><span>scanning toolchain</span><span>···</span><span class="b-ok">[ OK ] 40 modules loaded</span><span>···</span></div></div>
+
+    <section class="section" id="stack" aria-labelledby="stack-title">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <div class="sec-bar"><span>PANEL</span><span>03 // STACK</span></div>
+          <div class="sec-row">
+            <h2 id="stack-title"><span class="blk" aria-hidden="true"></span>Tech stack</h2>
+            <code class="sec-cmd">stack --list --all</code>
+          </div>
+        </header>
+
+        <div class="stack-groups" id="stack-groups"><!-- rendered by main.js --></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ JOURNEY -->
+    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">04</span><span>//</span><span class="b-name">GIT LOG</span><span>···</span><span class="b-cmd">$ git log --graph</span><span>···</span><span>replaying history</span><span>···</span><span class="b-ok">[ OK ] HEAD → main</span><span>···</span><span class="b-no">04</span><span>//</span><span class="b-name">GIT LOG</span><span>···</span><span class="b-cmd">$ git log --graph</span><span>···</span><span>replaying history</span><span>···</span><span class="b-ok">[ OK ] HEAD → main</span><span>···</span><span class="b-no">04</span><span>//</span><span class="b-name">GIT LOG</span><span>···</span><span class="b-cmd">$ git log --graph</span><span>···</span><span>replaying history</span><span>···</span><span class="b-ok">[ OK ] HEAD → main</span><span>···</span><span class="b-no">04</span><span>//</span><span class="b-name">GIT LOG</span><span>···</span><span class="b-cmd">$ git log --graph</span><span>···</span><span>replaying history</span><span>···</span><span class="b-ok">[ OK ] HEAD → main</span><span>···</span></div></div>
+
+    <section class="section" id="journey" aria-labelledby="journey-title">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <div class="sec-bar"><span>PANEL</span><span>04 // GIT LOG</span></div>
+          <div class="sec-row">
+            <h2 id="journey-title"><span class="blk" aria-hidden="true"></span>Journey</h2>
+            <code class="sec-cmd">git log --graph --oneline</code>
+          </div>
+        </header>
+
+        <ol class="gitlog">
+          <li class="commit reveal is-head">
+            <span class="node" aria-hidden="true"></span>
+            <p class="c-meta"><span class="c-hash">e1337f0</span><span class="c-ref">HEAD → main</span></p>
+            <h3>DevOps &amp; SRE focus</h3>
+            <p>Kubernetes, GitOps, CI/CD and observability. Going deeper on IaC with Terraform and on running systems reliably in production.</p>
+          </li>
+          <li class="commit reveal">
+            <span class="node" aria-hidden="true"></span>
+            <p class="c-meta"><span class="c-hash">9c4a2de</span><span class="c-date">2024 — 2026</span></p>
+            <h3>ft_transcendence: GitOps platform on OCI</h3>
+            <p>K3d on Oracle Cloud, ArgoCD, Helm, SOPS, GitHub Actions → GHCR, Traefik, ELK and Grafana.</p>
+          </li>
+          <li class="commit reveal">
+            <span class="node" aria-hidden="true"></span>
+            <p class="c-meta"><span class="c-hash">5b81f3a</span><span class="c-ref c-tag">tag: common-core</span></p>
+            <h3>Common Core completed</h3>
+            <p>The full 1337 / 42 software engineering core: C, Unix, algorithms, networking, C++ and containers.</p>
+          </li>
+          <li class="commit reveal">
+            <span class="node" aria-hidden="true"></span>
+            <p class="c-meta"><span class="c-hash">3e07b19</span><span class="c-date">2024</span></p>
+            <h3>ft_irc: an IRC server from scratch</h3>
+            <p>Non-blocking sockets and <code>poll()</code> in C++, my first real taste of network programming.</p>
+          </li>
+          <li class="commit reveal">
+            <span class="node" aria-hidden="true"></span>
+            <p class="c-meta"><span class="c-hash">a4d2c77</span><span class="c-date">2023</span></p>
+            <h3>Inception: first containerized infrastructure</h3>
+            <p>Docker, Nginx, MariaDB and WordPress from Debian base images. This is where the DevOps itch started.</p>
+          </li>
+          <li class="commit reveal">
+            <span class="node" aria-hidden="true"></span>
+            <p class="c-meta"><span class="c-hash">1f3c0a2</span><span class="c-date">2023</span></p>
+            <h3>Joined 1337 Coding School (UM6P)</h3>
+            <p>Survived the Piscine and started the peer-to-peer, project-based software engineering program of the 42 Network.</p>
+          </li>
+          <li class="commit reveal is-root">
+            <span class="node" aria-hidden="true"></span>
+            <p class="c-meta"><span class="c-hash">0000000</span><span class="c-ref c-tag">tag: v0.0.1</span></p>
+            <h3>init: hello, world</h3>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================================ SHELL -->
+    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">05</span><span>//</span><span class="b-name">SHELL</span><span>···</span><span class="b-cmd">$ ssh visitor@1337</span><span>···</span><span>opening session</span><span>···</span><span class="b-ok">[ OK ] tty allocated</span><span>···</span><span class="b-no">05</span><span>//</span><span class="b-name">SHELL</span><span>···</span><span class="b-cmd">$ ssh visitor@1337</span><span>···</span><span>opening session</span><span>···</span><span class="b-ok">[ OK ] tty allocated</span><span>···</span><span class="b-no">05</span><span>//</span><span class="b-name">SHELL</span><span>···</span><span class="b-cmd">$ ssh visitor@1337</span><span>···</span><span>opening session</span><span>···</span><span class="b-ok">[ OK ] tty allocated</span><span>···</span><span class="b-no">05</span><span>//</span><span class="b-name">SHELL</span><span>···</span><span class="b-cmd">$ ssh visitor@1337</span><span>···</span><span>opening session</span><span>···</span><span class="b-ok">[ OK ] tty allocated</span><span>···</span></div></div>
+
+    <section class="section" id="shell" aria-labelledby="shell-title">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <div class="sec-bar"><span>PANEL</span><span>05 // SHELL</span></div>
+          <div class="sec-row">
+            <h2 id="shell-title"><span class="blk" aria-hidden="true"></span>Interactive shell</h2>
+            <code class="sec-cmd">ssh visitor@ilyass.dev</code>
+          </div>
+        </header>
+
+        <div class="panel term reveal" id="term">
+          <div class="term-tabs" aria-hidden="true">
+            <span class="term-tab is-active">MAIN - zsh</span><span class="term-tab">EMPTY</span><span class="term-tab">EMPTY</span>
+          </div>
+          <div class="term-body" id="term-body" tabindex="-1">
+            <div class="term-out" id="term-out" role="log" aria-live="polite"></div>
+            <form class="term-line" id="term-form" autocomplete="off">
+              <label for="term-input"><span class="p-user">visitor@1337</span><span class="p-path">&nbsp;~&nbsp;$</span></label>
+              <input id="term-input" type="text" spellcheck="false" autocapitalize="off" aria-label="Terminal command, type help for a list of commands">
+            </form>
+          </div>
+        </div>
+        <p class="term-hint reveal">Try <button type="button" class="chip-cmd" data-cmd="help">help</button><button type="button" class="chip-cmd" data-cmd="neofetch">neofetch</button><button type="button" class="chip-cmd" data-cmd="kubectl get pods">kubectl get pods</button><button type="button" class="chip-cmd" data-cmd="boost">boost</button><button type="button" class="chip-cmd" data-cmd="sudo hire-me">sudo hire-me</button></p>
+      </div>
+    </section>
+
+    <!-- ============================================================ CONTACT -->
+    <div class="band" aria-hidden="true"><div class="band-track"><span class="b-no">06</span><span>//</span><span class="b-name">CONTACT</span><span>···</span><span class="b-cmd">$ mail -s "hello"</span><span>···</span><span>opening channel</span><span>···</span><span class="b-ok">[ OK ] inbox open</span><span>···</span><span class="b-no">06</span><span>//</span><span class="b-name">CONTACT</span><span>···</span><span class="b-cmd">$ mail -s "hello"</span><span>···</span><span>opening channel</span><span>···</span><span class="b-ok">[ OK ] inbox open</span><span>···</span><span class="b-no">06</span><span>//</span><span class="b-name">CONTACT</span><span>···</span><span class="b-cmd">$ mail -s "hello"</span><span>···</span><span>opening channel</span><span>···</span><span class="b-ok">[ OK ] inbox open</span><span>···</span><span class="b-no">06</span><span>//</span><span class="b-name">CONTACT</span><span>···</span><span class="b-cmd">$ mail -s "hello"</span><span>···</span><span>opening channel</span><span>···</span><span class="b-ok">[ OK ] inbox open</span><span>···</span></div></div>
+
+    <section class="section section-contact" id="contact" aria-labelledby="contact-title">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <div class="sec-bar"><span>PANEL</span><span>06 // CONTACT</span></div>
+          <div class="sec-row">
+            <h2 id="contact-title"><span class="blk" aria-hidden="true"></span>Let's build something that stays up</h2>
+            <code class="sec-cmd">mail -s "hello" ilyass</code>
+          </div>
+        </header>
+
+        <div class="contact-grid">
+          <div class="contact-text reveal">
+            <p class="lead">Have a question, an idea, or a system that needs taming? My inbox is always open.</p>
+            <div class="contact-actions">
+              <a class="btn btn-primary" href="mailto:ilyassbougajdi7777@gmail.com">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6"/></svg>Email me
+              </a>
+              <button class="btn" type="button" id="copy-email" data-email="ilyassbougajdi7777@gmail.com">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h12v12H8zM4 16V4h12"/></svg>Copy address
+              </button>
+            </div>
+            <ul class="socials">
+              <li><a href="https://github.com/ibougajd" target="_blank" rel="noopener"><svg class="ic ic-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-github"/></svg>github.com/ibougajd</a></li>
+              <li><a href="https://www.linkedin.com/in/ilyass-bougajdi" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4v11H4zM6 4.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM10 9h4v1.6c.6-1 1.8-1.8 3.4-1.8 2.7 0 3.6 1.8 3.6 4.4V20h-4v-6c0-1.3-.4-2.2-1.6-2.2s-1.4 1-1.4 2.2v6h-4z"/></svg>in/ilyass-bougajdi</a></li>
+              <li><a href="assets/ilyass-bougajdi-cv.pdf" download><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>ilyass-bougajdi-cv.pdf</a></li>
+            </ul>
+          </div>
+
+          <form class="panel mailer reveal" id="mailer" action="https://formspree.io/f/xqeydvoq" method="POST">
+            <div class="panel-bar"><span>MAIL // NEW MESSAGE</span><span>to: ilyass</span></div>
+            <label class="field"><span>name</span><input name="name" type="text" required autocomplete="name" placeholder="Ada Lovelace"></label>
+            <label class="field"><span>email</span><input name="email" type="email" required autocomplete="email" placeholder="ada@example.com"></label>
+            <label class="field"><span>message</span><textarea name="message" rows="5" required placeholder="Let's talk about…"></textarea></label>
+            <div class="mailer-foot">
+              <p class="mailer-status" id="mailer-status" role="status" aria-live="polite"></p>
+              <button class="btn btn-primary" type="submit">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-6 16-3-7z"/></svg>send ↵
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p class="footer-cmd"><span class="p-user">ilyass@1337</span><span class="p-path">&nbsp;~&nbsp;$</span>&nbsp;exit<span class="caret" aria-hidden="true"></span></p>
+      <p class="footer-msg">[ connection to ilyass@1337 closed ] thanks for stopping by.</p>
+      <div class="footer-row">
+        <span>© <span id="year">2026</span> Ilyass Bougajdi · built by hand, no frameworks</span>
+        <span>session uptime <span id="uptime">00:00</span></span>
+        <a href="#top">back to top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- command palette -->
+  <div class="palette" id="palette" hidden>
+    <div class="palette-backdrop" data-close></div>
+    <div class="palette-box panel" role="dialog" aria-modal="true" aria-labelledby="palette-label">
+      <div class="panel-bar"><span id="palette-label">COMMAND PALETTE</span><span>esc to close</span></div>
+      <div class="palette-input"><span aria-hidden="true">&gt;</span><input id="palette-input" type="text" placeholder="Type a command or search…" aria-controls="palette-list" aria-autocomplete="list" autocomplete="off" spellcheck="false"></div>
+      <ul class="palette-list" id="palette-list" role="listbox" aria-label="Commands"></ul>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/scene.js?v=20261009175726" defer></script>
+  <script src="js/main.js?v=20261009175726" defer></script>
+  <script src="js/motion.js?v=20261009175726" defer></script>
 </body>
-
 </html>

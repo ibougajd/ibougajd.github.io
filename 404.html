@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 — command not found · Ilyass Bougajdi</title>
+  <meta name="theme-color" content="#05090b">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .nf { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: var(--gutter); }
+    .nf .panel { width: min(640px, 100%); padding-bottom: 22px; }
+    .nf pre { margin: 0; padding: 18px 20px 0; white-space: pre-wrap; font: 14px/1.7 var(--font-mono); }
+    .nf h1 { margin: 6px 20px 0; font: 700 clamp(56px, 14vw, 96px)/1 var(--font-display); color: var(--bright); text-shadow: 0 0 24px rgba(255, 42, 109, .45); }
+    .nf .btn { margin: 22px 20px 0; }
+  </style>
+</head>
+<body>
+  <main class="nf">
+    <div class="panel">
+      <div class="panel-bar"><span>TERMINAL</span><span>exit code 127</span></div>
+      <h1>404</h1>
+      <pre><span class="p-user">visitor@1337</span><span class="p-path"> ~ $</span> cd <span id="path">/this-page</span>
+<span style="color: var(--pink)">zsh: no such file or directory</span>
+<span class="p-path">this route was never deployed — or ArgoCD already pruned it.</span></pre>
+      <a class="btn btn-primary" href="/">cd ~ (back home)</a>
+    </div>
+  </main>
+  <script>document.getElementById('path').textContent = location.pathname;</script>
+</body>
+</html>

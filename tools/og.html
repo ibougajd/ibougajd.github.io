@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- Renders the social preview. Serve the site, open /tools/og.html at 1200x630 and screenshot it into assets/og.png. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>og image</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #05090b; }
+  #scene { position: absolute; inset: 0; width: 1200px; height: 630px; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,9,11,.94) 0%, rgba(5,9,11,.7) 42%, rgba(5,9,11,0) 70%); }
+  .card { position: absolute; left: 64px; top: 120px; font-family: 'JetBrains Mono', monospace; color: #aacfd1; }
+  .p { font-size: 22px; color: #e6fbfc; margin: 0 0 12px; }
+  .p span { color: #5f8588; }
+  h1 { margin: 0; font: 700 92px/.92 'Chakra Petch', sans-serif; color: #e6fbfc; letter-spacing: .04em; text-shadow: 0 0 30px rgba(5,217,232,.3); }
+  .role { margin: 22px 0 0; font: 600 26px 'Chakra Petch', sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+  .role i { color: #ff2a6d; font-style: normal; margin: 0 .3em; }
+  .url { position: absolute; left: 64px; bottom: 48px; font: 700 20px 'JetBrains Mono', monospace; color: #05d9e8; }
+  .frame { position: absolute; inset: 16px; border: 1px solid #2f4a4d; }
+</style>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <div class="shade"></div>
+  <div class="frame"></div>
+  <div class="card">
+    <p class="p">ilyass@1337 <span>~ $</span> whoami</p>
+    <h1>ILYASS<br>BOUGAJDI</h1>
+    <p class="role">DevOps Engineer <i>//</i> Cloud-Native <i>//</i> Observability</p>
+  </div>
+  <div class="url">github.com/ibougajd</div>
+  <script src="../js/scene.js"></script>
+</body>
+</html>
