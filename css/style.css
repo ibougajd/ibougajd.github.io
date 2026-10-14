@@ -602,8 +602,19 @@ html:not(.drive) .stage-panel { width: 100%; }
   /* no box at all: the text sits straight on the city, a dark halo around each glyph keeps it readable */
   background: none; border-color: transparent; box-shadow: none;
   --dim: #9dbdc0;                       /* dim text needs more light without a backdrop */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, .95), 0 0 6px rgba(0, 0, 0, .9), 0 0 18px rgba(0, 0, 0, .7);
+  /* tight dark edge keeps each glyph crisp over lit windows; the wide halo dims the city just around the words */
+  text-shadow:
+    0 0 1px #000, 0 0 2px #000, 0 1px 3px rgba(0, 0, 0, .95),
+    0 0 8px rgba(0, 0, 0, .9), 0 0 16px rgba(0, 0, 0, .75), 0 0 32px rgba(0, 0, 0, .55);
 }
+/* headings and bright labels: the same edge, plus a faint glow in the district's color */
+.drive .stage-panel h2, .drive .stage-panel h3, .drive .stage-panel h4 {
+  text-shadow: 0 0 1px #000, 0 0 2px #000, 0 2px 4px #000, 0 0 12px rgba(0, 0, 0, .9), 0 0 28px rgba(0, 0, 0, .7), 0 0 22px color-mix(in srgb, var(--district) 35%, transparent);
+}
+/* the diagram's labels are SVG text: shadow them with a filter instead */
+.drive .stage-panel .diagram text { filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 4px rgba(0, 0, 0, .8)); }
+/* the intro on the start screen gets the same treatment */
+.drive .hero-inner { text-shadow: 0 0 1px #000, 0 0 2px #000, 0 1px 3px rgba(0, 0, 0, .9), 0 0 12px rgba(0, 0, 0, .7); }
 .drive .stage-panel .panel-bar, .drive .stage-panel .sec-bar { border-bottom-color: rgba(170, 207, 209, .4); }
 /* everything inside is see-through too: cards, tiles, buttons, fields and the terminal keep only their lines */
 .drive .stage-panel .panel, .drive .stage-panel .term, .drive .stage-panel .tile, .drive .stage-panel .btn,
