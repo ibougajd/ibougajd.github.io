@@ -677,6 +677,13 @@
     get stop() { return stop; },
     get animated() { return running; },
     accent: i => THEMES[i]?.ui,
+    // where a district's sun sits in the viewport (the canvas fills it), and its color as "r g b"
+    sunAt(i) {
+      const th = THEMES[i];
+      if (!th || !W) return null;
+      const n = parseInt(th.glow.slice(1), 16);
+      return { x: sunXFor(facingOf(i)), y: G.sunY, r: G.sunR, rgb: `${n >> 16} ${(n >> 8) & 255} ${n & 255}` };
+    },
     boost(seconds = 2.5) { pulse = seconds; start(); },
     set(i) {
       if (!THEMES[i]) return;

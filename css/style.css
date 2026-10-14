@@ -602,19 +602,33 @@ html:not(.drive) .stage-panel { width: 100%; }
   /* no box at all: the text sits straight on the city, a dark halo around each glyph keeps it readable */
   background: none; border-color: transparent; box-shadow: none;
   --dim: #9dbdc0;                       /* dim text needs more light without a backdrop */
+  text-shadow: var(--ink);
+}
+.drive {
   /* tight dark edge keeps each glyph crisp over lit windows; the wide halo dims the city just around the words */
-  text-shadow:
-    0 0 1px #000, 0 0 2px #000, 0 1px 3px rgba(0, 0, 0, .95),
-    0 0 8px rgba(0, 0, 0, .9), 0 0 16px rgba(0, 0, 0, .75), 0 0 32px rgba(0, 0, 0, .55);
+  --ink: 0 0 1px #000, 0 0 2px #000, 0 1px 3px rgba(0, 0, 0, .95), 0 0 8px rgba(0, 0, 0, .9), 0 0 16px rgba(0, 0, 0, .75), 0 0 32px rgba(0, 0, 0, .55);
+  --ink-head: 0 0 1px #000, 0 0 2px #000, 0 2px 4px #000, 0 0 12px rgba(0, 0, 0, .9), 0 0 28px rgba(0, 0, 0, .7), 0 0 22px color-mix(in srgb, var(--district) 35%, transparent);
+  --ink-hero: 0 0 1px #000, 0 0 2px #000, 0 1px 3px rgba(0, 0, 0, .9), 0 0 12px rgba(0, 0, 0, .7);
+  --sun-rgb: 255 42 109;                /* the current district's sun, set by sunlight.js */
+}
+/* backlight from the sun (sunlight.js sets --lx/--ly = direction to the sun, --li = 0..1 how close it is):
+   a thin rim on the side facing the sun, then a soft glow of its color; em units so big titles get a bigger rim */
+.drive [data-lit] {
+  --sun-rim:
+    calc(var(--lx, 0) * .07em) calc(var(--ly, 0) * .07em) .04em rgb(var(--sun-rgb) / calc(var(--li, 0) * .95)),
+    calc(var(--lx, 0) * .14em) calc(var(--ly, 0) * .14em) .3em rgb(var(--sun-rgb) / calc(var(--li, 0) * .45)),
+    0 0 .9em rgb(var(--sun-rgb) / calc(var(--li, 0) * .3));
+  text-shadow: var(--sun-rim), var(--ink);
 }
 /* headings and bright labels: the same edge, plus a faint glow in the district's color */
-.drive .stage-panel h2, .drive .stage-panel h3, .drive .stage-panel h4 {
-  text-shadow: 0 0 1px #000, 0 0 2px #000, 0 2px 4px #000, 0 0 12px rgba(0, 0, 0, .9), 0 0 28px rgba(0, 0, 0, .7), 0 0 22px color-mix(in srgb, var(--district) 35%, transparent);
-}
+.drive .stage-panel h2, .drive .stage-panel h3, .drive .stage-panel h4 { text-shadow: var(--ink-head); }
+.drive .stage-panel h2[data-lit], .drive .stage-panel h3[data-lit], .drive .stage-panel h4[data-lit] { text-shadow: var(--sun-rim), var(--ink-head); }
 /* the diagram's labels are SVG text: shadow them with a filter instead */
 .drive .stage-panel .diagram text { filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 4px rgba(0, 0, 0, .8)); }
 /* the intro on the start screen gets the same treatment */
-.drive .hero-inner { text-shadow: 0 0 1px #000, 0 0 2px #000, 0 1px 3px rgba(0, 0, 0, .9), 0 0 12px rgba(0, 0, 0, .7); }
+.drive .hero-inner { text-shadow: var(--ink-hero); }
+.drive .hero-inner [data-lit] { text-shadow: var(--sun-rim), var(--ink-hero); }
+.drive .hero-title[data-lit] { text-shadow: var(--sun-rim), 0 0 28px rgba(5, 217, 232, .25); }
 .drive .stage-panel .panel-bar, .drive .stage-panel .sec-bar { border-bottom-color: rgba(170, 207, 209, .4); }
 /* everything inside is see-through too: cards, tiles, buttons, fields and the terminal keep only their lines */
 .drive .stage-panel .panel, .drive .stage-panel .term, .drive .stage-panel .tile, .drive .stage-panel .btn,
