@@ -598,10 +598,29 @@ html:not(.drive) .stage-panel { width: 100%; }
 }
 /* car faces left on odd districts, so their panel sits on the right */
 .drive .stage:nth-child(even) .stage-panel { left: auto; right: var(--panel-r, var(--gutter)); width: var(--panel-w-r, calc(100% - 2 * var(--gutter))); }
-.drive .stage-panel.panel { background: rgba(5, 9, 11, .88); border-color: var(--line); box-shadow: 0 18px 60px rgba(0, 0, 0, .45); }
+.drive .stage-panel.panel {
+  /* glass: the district stays visible behind the text, a light tint + blur keeps it readable */
+  background: linear-gradient(180deg, rgba(5, 9, 11, .42), rgba(5, 9, 11, .3));
+  -webkit-backdrop-filter: blur(6px) saturate(1.15); backdrop-filter: blur(6px) saturate(1.15);
+  border-color: rgba(170, 207, 209, .28);
+  box-shadow: inset 0 0 40px rgba(5, 9, 11, .35);
+  --dim: #86a9ac;                       /* dim text needs a little more light on glass */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .85), 0 0 14px rgba(0, 0, 0, .55);
+}
+.drive .stage-panel .panel-bar, .drive .stage-panel .sec-bar { border-bottom-color: rgba(170, 207, 209, .4); }
+/* screens inside the HUD (profile, cards, terminal, form) sit a shade darker than the glass */
+.drive .stage-panel .panel { background-color: rgba(5, 9, 11, .55); border-color: rgba(47, 74, 77, .9); }
+.drive .stage-panel .term { background-color: rgba(3, 6, 8, .72); }
+.drive .stage-panel .tile, .drive .stage-panel .btn { background-color: rgba(5, 9, 11, .5); }
+.drive .stage-panel .btn-primary { background-color: rgba(5, 217, 232, .12); }
+.drive .stage-panel .diagram svg { background: rgba(5, 9, 11, .6); }
+.drive .stage-panel .field input, .drive .stage-panel .field textarea { background: rgba(5, 9, 11, .62); }
+.drive .stage-panel .chips li, .drive .stage-panel .filter { background-color: rgba(5, 9, 11, .4); }
+.drive .stage-panel .filter.is-active { background-color: var(--main); text-shadow: none; }
+.drive .stage-panel .stage-next { background-color: rgba(5, 9, 11, .35); }
 .drive .stage-panel.panel::before, .drive .stage-panel.panel::after { border-color: var(--district); transition: border-color .6s; }
 .drive .stage-scroll {
-  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; touch-action: pan-y;
   scrollbar-width: thin; scrollbar-color: var(--line) transparent; container-type: inline-size;
 }
 .drive .stage-scroll:focus { outline: none; }
@@ -610,6 +629,9 @@ html:not(.drive) .stage-panel { width: 100%; }
 .drive .stage .wrap { width: auto; margin: 0; padding: clamp(18px, 3vw, 30px); }
 .drive .section, .drive .section-contact { padding: 0; }
 .drive .sec-head { margin-bottom: clamp(24px, 4vw, 40px); }
+/* the title sweep travels the panel's width, not the page's */
+.motion.drive .sec-head.is-in::after { animation-name: sweep-panel; }
+@keyframes sweep-panel { 0% { opacity: 1; transform: translate3d(-120px, 0, 0); } 90% { opacity: 1; } 100% { opacity: 0; transform: translate3d(calc(100cqw - 180px), 0, 0); } }
 .drive .sub-head { margin-top: clamp(36px, 5vw, 56px); }
 .drive .case { margin-bottom: 28px; }
 .drive .footer { margin: 0; padding: 0; border-top: 1px solid var(--line); background: none; }
@@ -734,4 +756,9 @@ html:not(.drive) .stage-panel { width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   .drive .stage.is-entering .stage-panel, .drive .stage.is-leaving .stage-panel { animation: none; }
   .drive .district { display: none; }
+}
+
+/* browsers without backdrop-filter: keep it readable with a deeper tint */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .drive .stage-panel.panel { background: rgba(5, 9, 11, .66); }
 }
