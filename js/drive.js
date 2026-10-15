@@ -311,6 +311,25 @@
     if (!busy && !e.repeat && settled()) addPull(dir, nothingToRead() ? 1 : .55);
   });
 
+  // panel lamp: the light inside a panel opens from (and follows) the pointer; on touch it switches on while
+  // you're reading and fades a moment after your finger lifts (CSS draws it: .stage-panel::before)
+  for (const panel of $$('.stage-panel.panel')) {
+    const aim = (x, y) => {
+      const r = panel.getBoundingClientRect();
+      panel.style.setProperty('--mx', `${x - r.left}px`);
+      panel.style.setProperty('--my', `${y - r.top}px`);
+    };
+    panel.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') aim(e.clientX, e.clientY); });
+    panel.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') aim(e.clientX, e.clientY); }, { passive: true });
+    let off = 0;
+    panel.addEventListener('touchstart', e => {
+      aim(e.touches[0].clientX, e.touches[0].clientY);
+      clearTimeout(off);
+      panel.classList.add('is-lit');
+    }, { passive: true });
+    panel.addEventListener('touchend', () => { clearTimeout(off); off = setTimeout(() => panel.classList.remove('is-lit'), 2500); }, { passive: true });
+  }
+
   dcPrev?.addEventListener('click', () => go(cur - 1));
   dcNext?.addEventListener('click', () => go(cur + 1));
 

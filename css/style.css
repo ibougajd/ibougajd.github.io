@@ -635,7 +635,40 @@ html:not(.drive) .stage-panel { width: 100%; }
 .drive .stage-panel .chips li, .drive .stage-panel .filter, .drive .stage-panel .stage-next,
 .drive .stage-panel .field input, .drive .stage-panel .field textarea, .drive .stage-panel .diagram svg { background-color: transparent; }
 .drive .stage-panel .filter.is-active { background-color: var(--main); text-shadow: none; }
-.drive .stage-panel.panel::before, .drive .stage-panel.panel::after { display: none; }
+.drive .stage-panel.panel::after { display: none; }
+
+/* the panel lamp: off by default (the text sits on the city), it opens from the cursor while you hover
+   (or touch / tab through) a panel, darkens and blurs the city behind the text, and glows in a colour
+   pair chosen to harmonise with that district. --mx/--my follow the pointer (drive.js). */
+#about   { --lamp-a: #d300c5; --lamp-b: #7a5cff; }   /* magenta dusk · violet */
+#work    { --lamp-a: #05d9e8; --lamp-b: #3d7bff; }   /* neon cyan · electric blue */
+#stack   { --lamp-a: #8fe3a8; --lamp-b: #2bd9c6; }   /* server green · teal */
+#journey { --lamp-a: #e3c88f; --lamp-b: #ff7a45; }   /* amber · ember */
+#shell   { --lamp-a: #2bd96a; --lamp-b: #b6ff5c; }   /* terminal green · lime */
+#contact { --lamp-a: #ffb36e; --lamp-b: #ff2a6d; }   /* dawn peach · sunrise pink */
+.drive .stage-panel.panel { isolation: isolate; }
+.drive .stage-panel.panel::before {
+  display: block; inset: 0; width: auto; height: auto; top: 0; left: 0; border: 0; z-index: -1;
+  background:
+    radial-gradient(70% 60% at var(--mx, 50%) var(--my, 30%), color-mix(in srgb, var(--lamp-a, var(--district)) 20%, transparent), transparent 70%),
+    radial-gradient(80% 70% at 100% 100%, color-mix(in srgb, var(--lamp-b, var(--district)) 16%, transparent), transparent 70%),
+    linear-gradient(180deg, rgba(5, 9, 11, .72), rgba(5, 9, 11, .62));
+  -webkit-backdrop-filter: blur(10px) saturate(1.2); backdrop-filter: blur(10px) saturate(1.2);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--lamp-a, var(--district)) 38%, transparent),
+    inset 0 0 70px color-mix(in srgb, var(--lamp-a, var(--district)) 14%, transparent),
+    0 0 40px color-mix(in srgb, var(--lamp-b, var(--district)) 18%, transparent);
+  opacity: 0;
+  clip-path: circle(0 at var(--mx, 50%) var(--my, 30%));
+  transition: clip-path .5s var(--ease-snap), opacity .35s ease;
+}
+.drive .stage-panel.panel:hover::before,
+.drive .stage-panel.panel.is-lit::before,
+.drive .stage-panel.panel:has(:focus-visible:not(.stage-scroll))::before {
+  opacity: 1;
+  clip-path: circle(150% at var(--mx, 50%) var(--my, 30%));
+  transition: clip-path .75s var(--ease-out), opacity .25s ease;
+}
 .drive .stage-scroll {
   flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; touch-action: pan-y;
   scrollbar-width: none; container-type: inline-size;
