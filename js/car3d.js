@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const MODEL = 'assets/models/cyberpunk-car.glb?v=20261015d';
+const MODEL = 'assets/models/cyberpunk-car.glb?v=20261015e';
 const LENGTH_2D = 434;        // the 2D car's length in its own units (scene.js draws it 434 long, pivot at 215)
 const GROUND_2D = 6;          // tyre bottom sits this far below the 2D pivot, in the same units
 const VIEW_YAW = .2;          // turn the nose a little toward the viewer: reads as 3D, not a cut-out
@@ -48,7 +48,7 @@ async function main() {
   // ------------------------------------------------------------------ split the wheels out of the single mesh
   const geo = src.geometry;
   const { body, wheels } = splitWheels(geo);
-  const carModel = new THREE.Group();                     // model space: cm, y up, nose toward -z
+  const carModel = new THREE.Group();                     // raw geometry: cm, y up, nose toward +z (the file's node matrices turn it 180°; we use the mesh alone)
   const bodyGeo = geo.clone(); bodyGeo.setIndex(body);
   carModel.add(new THREE.Mesh(bodyGeo, material));
   const wheelPivots = wheels.map(w => {
@@ -143,8 +143,8 @@ async function main() {
     outer.rotation.z = -c.tilt;
     // flip runs 1 → -1 through a U-turn: turn the model through the same half circle
     const angle = Math.acos(Math.max(-1, Math.min(1, c.flip)));
-    heading.rotation.y = -(Math.PI / 2 + VIEW_YAW) + angle * (Math.PI + 2 * VIEW_YAW) / Math.PI;
-    for (const w of wheelPivots) w.pivot.rotation.x = -c.spin / (w.radius * sc);
+    heading.rotation.y = (Math.PI / 2 - VIEW_YAW) - angle * (Math.PI - 2 * VIEW_YAW) / Math.PI;
+    for (const w of wheelPivots) w.pivot.rotation.x = c.spin / (w.radius * sc);
 
     // lights follow the district (blended while driving between two)
     const A = colorsOf(c.a), B = colorsOf(c.b);
