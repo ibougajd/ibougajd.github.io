@@ -6,7 +6,7 @@
   'use strict';
 
   const root = document.documentElement;
-  if (!root.classList.contains('drive') || !window.scene?.sunAt) return;
+  if (!root.classList.contains('drive')) return;
 
   const TEXT = 'h1, h2, h3, h4, p, li, dt, dd, blockquote, .sec-bar, .panel-bar, .project-bar, .c-meta, .case-path, .tile span, .field span, .btn, .chip-cmd, .project-link, .sn-hint, .sn-to';
   const AMBIENT = .12;          // even far from the sun the edges catch a little light
@@ -38,7 +38,7 @@
 
   function enter(index, el) {
     stage = el;
-    sun = window.scene.sunAt(index);
+    sun = window.scene?.sunAt?.(index) || null;
     if (sun) root.style.setProperty('--sun-rgb', sun.rgb);
     request();
     setTimeout(request, 750);     // again once the panel has finished sliding in
@@ -48,7 +48,13 @@
   document.addEventListener('scroll', e => { if (stage && stage.contains(e.target)) request(); }, { capture: true, passive: true });
   addEventListener('resize', () => {
     // the scene recomputes its layout on resize; read the sun after it has
-    requestAnimationFrame(() => { if (stage && window.drive) { sun = window.scene.sunAt(window.drive.index); request(); } });
+    requestAnimationFrame(() => { if (stage && window.drive) { sun = window.scene?.sunAt?.(window.drive.index) || null; request(); } });
+  });
+
+  // the background (3D or 2D) loads after this file: light the text once it knows where its sun is
+  document.addEventListener('scene:ready', () => {
+    const el = document.querySelector('main > .stage.is-active');
+    if (el && window.drive) enter(window.drive.index, el);
   });
 
   // drive.js announced the first district before this file loaded

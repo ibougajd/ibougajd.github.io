@@ -635,7 +635,6 @@ html:not(.drive) .stage-panel { width: 100%; }
 .drive .stage-panel .chips li, .drive .stage-panel .filter, .drive .stage-panel .stage-next,
 .drive .stage-panel .field input, .drive .stage-panel .field textarea, .drive .stage-panel .diagram svg { background-color: transparent; }
 .drive .stage-panel .filter.is-active { background-color: var(--main); text-shadow: none; }
-.drive .stage-panel.panel::after { display: none; }
 
 /* the panel lamp: off by default (the text sits on the city), it opens from the cursor while you hover
    (or touch / tab through) a panel, darkens and blurs the city behind the text, and glows in a colour
@@ -669,6 +668,36 @@ html:not(.drive) .stage-panel { width: 100%; }
   clip-path: circle(150% at var(--mx, 50%) var(--my, 30%));
   transition: clip-path .75s var(--ease-out), opacity .25s ease;
 }
+
+/* hologram: the car's projector throws each panel into the night. It hangs tilted toward the projector
+   (3D background draws the beam to its near edge), and turns to face you when you hover or touch it. */
+.drive .stage { perspective: 1800px; }
+.drive .stage-panel.panel { rotate: var(--tilt-axis, y) var(--tilt, 0deg); transition: rotate .7s var(--ease-out); }
+.drive[data-layout="side"] .stage:nth-child(odd) .stage-panel.panel { --tilt: 8deg; }    /* car on the right */
+.drive[data-layout="side"] .stage:nth-child(even) .stage-panel.panel { --tilt: -8deg; }  /* car on the left */
+.drive[data-layout="stack"] .stage-panel.panel { --tilt-axis: x; --tilt: 4deg; }         /* car below */
+.drive .stage-panel.panel:hover, .drive .stage-panel.panel.is-lit, .drive .stage-panel.panel:has(:focus-visible:not(.stage-scroll)) { --tilt: 0deg; }
+.drive .stage-panel.panel::after {
+  display: block; content: ''; position: absolute; inset: 0; width: auto; height: auto; border: 0; z-index: -1; pointer-events: none;
+  --holo: var(--lamp-a, var(--district));
+  background:
+    linear-gradient(var(--holo), var(--holo)) 0 0 / 26px 1.5px no-repeat,
+    linear-gradient(var(--holo), var(--holo)) 0 0 / 1.5px 26px no-repeat,
+    linear-gradient(var(--holo), var(--holo)) 100% 0 / 26px 1.5px no-repeat,
+    linear-gradient(var(--holo), var(--holo)) 100% 0 / 1.5px 26px no-repeat,
+    linear-gradient(var(--holo), var(--holo)) 0 100% / 26px 1.5px no-repeat,
+    linear-gradient(var(--holo), var(--holo)) 0 100% / 1.5px 26px no-repeat,
+    linear-gradient(var(--holo), var(--holo)) 100% 100% / 26px 1.5px no-repeat,
+    linear-gradient(var(--holo), var(--holo)) 100% 100% / 1.5px 26px no-repeat,
+    repeating-linear-gradient(180deg, color-mix(in srgb, var(--holo) 6%, transparent) 0 1px, transparent 1px 4px);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--holo) 16%, transparent), 0 0 28px color-mix(in srgb, var(--holo) 10%, transparent);
+  animation: holo-hum 7s steps(1) infinite;
+}
+.drive .stage.is-entering .stage-panel.panel::after { animation: holo-on .9s steps(1) both, holo-hum 7s steps(1) .9s infinite; }
+@keyframes holo-hum { 0%, 46%, 48%, 81%, 83%, 100% { opacity: 1; } 47% { opacity: .55; } 82% { opacity: .75; } }
+@keyframes holo-on { 0% { opacity: 0; } 15% { opacity: .8; } 25% { opacity: .1; } 40% { opacity: 1; } 55% { opacity: .4; } 70%, 100% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .drive .stage-panel.panel::after { animation: none; } }
+
 .drive .stage-scroll {
   flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; touch-action: pan-y;
   scrollbar-width: none; container-type: inline-size;
