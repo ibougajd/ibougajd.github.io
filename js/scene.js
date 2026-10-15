@@ -504,11 +504,13 @@
       const lx = 380 - p * 900, ly = -(14 + (i * 37 % 100));
       ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx - (120 + boostAmt * 160), ly); ctx.stroke();
     }
-    // headlight beam
-    const bg = ctx.createLinearGradient(430, 0, 900, 0);
-    bg.addColorStop(0, 'rgba(5,217,232,0.35)'); bg.addColorStop(1, 'rgba(5,217,232,0)');
-    ctx.fillStyle = bg;
-    ctx.beginPath(); ctx.moveTo(430, -66); ctx.lineTo(900, -128); ctx.lineTo(900, 10); ctx.lineTo(430, -58); ctx.closePath(); ctx.fill();
+    // headlight beam (the 3D car brings its own headlights)
+    if (!window.car3d) {
+      const bg = ctx.createLinearGradient(430, 0, 900, 0);
+      bg.addColorStop(0, 'rgba(5,217,232,0.35)'); bg.addColorStop(1, 'rgba(5,217,232,0)');
+      ctx.fillStyle = bg;
+      ctx.beginPath(); ctx.moveTo(430, -66); ctx.lineTo(900, -128); ctx.lineTo(900, 10); ctx.lineTo(430, -58); ctx.closePath(); ctx.fill();
+    }
     // underglow
     glow(C.magenta, 30); ctx.fillStyle = `rgba(211,0,197,${0.55 + 0.25 * Math.sin(t * 3) + boostAmt * 0.2})`;
     ctx.beginPath(); ctx.ellipse(215, 2, 200, 6, 0, 0, TAU); ctx.fill(); noGlow();

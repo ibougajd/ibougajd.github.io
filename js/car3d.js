@@ -62,6 +62,7 @@ async function main() {
     return { pivot, radius: w.radius };
   });
   for (const m of carModel.children) m.traverse?.(o => { if (o.isMesh) o.frustumCulled = false; });
+  addHeadlights(carModel);
   geo.computeBoundingBox();
   const bb = geo.boundingBox;
   const modelLen = bb.max.z - bb.min.z, modelMidZ = (bb.max.z + bb.min.z) / 2;
@@ -168,6 +169,63 @@ async function main() {
   window.car3d = { frame };
   window.scene?.redraw?.();
   setTimeout(() => window.scene?.redraw?.(), 600);
+}
+
+// Headlights: the model's two LED strips sit low on the nose (x ±67, y 58, z 248 in its cm space, nose +z).
+// Each gets a hot core + a thin lens streak on top of the car, and a soft cone of light that fades with
+// distance and toward its edges, angled a little down at the road — attached to the car, so it turns with it.
+const LAMP_COLOR = new THREE.Color(.82, .92, 1);
+function glowTexture(streak) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = streak ? 32 : 256;
+  const g = c.getContext('2d');
+  const grd = streak
+    ? g.createLinearGradient(0, 0, 256, 0)
+    : g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  if (streak) {
+    grd.addColorStop(0, 'rgba(255,255,255,0)'); grd.addColorStop(.5, 'rgba(255,255,255,1)'); grd.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grd; g.fillRect(0, 0, 256, 32);
+    g.globalCompositeOperation = 'destination-in';
+    const v = g.createLinearGradient(0, 0, 0, 32);
+    v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(.5, 'rgba(0,0,0,1)'); v.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = v; g.fillRect(0, 0, 256, 32);
+  } else {
+    grd.addColorStop(0, 'rgba(255,255,255,1)'); grd.addColorStop(.12, 'rgba(255,255,255,.85)');
+    grd.addColorStop(.35, 'rgba(255,255,255,.22)'); grd.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grd; g.fillRect(0, 0, 256, 256);
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+function addHeadlights(carModel) {
+  const core = glowTexture(false), streak = glowTexture(true);
+  const LEN = 950, R_END = 190, DIP = .05;
+  const coneGeo = new THREE.ConeGeometry(R_END, LEN, 40, 1, true).translate(0, -LEN / 2, 0).rotateX(-Math.PI / 2);
+  const coneMat = new THREE.ShaderMaterial({
+    uniforms: { uColor: { value: LAMP_COLOR }, uLen: { value: LEN } },
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    vertexShader: `uniform float uLen; varying float vT; varying vec3 vN; varying vec3 vV;
+      void main(){ vT = position.z / uLen; vec4 mv = modelViewMatrix * vec4(position, 1.); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `uniform vec3 uColor; varying float vT; varying vec3 vN; varying vec3 vV;
+      void main(){
+        float facing = pow(abs(dot(normalize(vN), vec3(0., 0., 1.))), 1.4);     // ortho view: soft toward the cone's rim
+        float a = pow(1. - clamp(vT, 0., 1.), 2.2) * smoothstep(0., .04, vT) * facing * .16;
+        gl_FragColor = vec4(uColor, a);
+      }`
+  });
+  for (const x of [67, -67]) {
+    const lamp = new THREE.Group();
+    lamp.position.set(x, 58, 250);
+    carModel.add(lamp);
+    const cone = new THREE.Mesh(coneGeo, coneMat);
+    cone.rotation.x = DIP;
+    cone.frustumCulled = false;
+    lamp.add(cone);
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: core, color: LAMP_COLOR, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .95 }));
+    glow.scale.set(64, 64, 1); glow.position.z = 6;
+    const flare = new THREE.Sprite(new THREE.SpriteMaterial({ map: streak, color: LAMP_COLOR, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .7 }));
+    flare.scale.set(300, 12, 1); flare.position.z = 7;
+    lamp.add(glow, flare);
+  }
 }
 
 // one mesh, 44 parts: tyres, rims and brake discs are separate pieces. Group them by wheel.
