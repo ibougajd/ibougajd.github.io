@@ -15,7 +15,8 @@ python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-Open it through a server rather than `file://` — the icon sprite (`assets/icons.svg`) is loaded with `<use href>`,
+Open it through a server rather than `file://` — the icon sprite (`assets/models/        cyberpunk-car.glb — the car (textures resized to 1024px JPEG, ~1 MB)
+assets/icons.svg`) is loaded with `<use href>`,
 which browsers block on `file://`.
 
 ## Structure
@@ -25,6 +26,7 @@ index.html            all sections, each one a <section class="stage"> (a distri
 404.html              terminal-style "command not found" page
 css/style.css         design tokens, HUD panels, layout; "DRIVE MODE" at the end is the fixed-window layout
 js/scene.js           the drive: per-district themes (THEMES), city, highway, ramps, car — canvas, no assets
+js/car3d.js           the car as a 3D model (three.js) drawn over the 2D drive; falls back to the drawn car
 js/drive.js           district controller: wheel / swipe / keys / links → drives, panel-first scrolling, minimap, URL hash
 js/main.js            boot sequence, terminal commands, command palette, filters, contact form
 js/motion.js          panel entrances, git log fill, card tilt
@@ -52,3 +54,10 @@ districts switch instantly; without JavaScript the page falls back to a normal s
 This folder is the `ibougajd.github.io` repo: push to `main` and Pages serves it from the root (`.nojekyll` skips
 Jekyll). After changing CSS/JS, bump the `?v=` query on the `<link>`/`<script>` tags in `index.html` so visitors
 don't get a stale cached copy.
+
+## Credits
+
+3D car: [“Cyberpunk car”](https://sketchfab.com/3d-models/cyberpunk-car-b4301ff99d214d16a7a43708a5866bf0) by
+[4d_Bob](https://sketchfab.com/3d_Bob), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+Textures resized and re-encoded for the web; geometry unchanged. The credit also appears in the site footer
+and must stay there while the model is used.

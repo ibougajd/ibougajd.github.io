@@ -469,14 +469,15 @@
   const BODY = new Path2D('M10,-38 L2,-58 L4,-78 L62,-84 Q102,-88 130,-110 L196,-116 Q236,-113 288,-84 L400,-72 Q426,-68 434,-54 L430,-42 L418,-36 Z');
   const WIN = new Path2D('M136,-106 L194,-112 Q228,-110 276,-86 L120,-86 Q126,-98 136,-106 Z');
 
-  function drawCar(car, accel) {
+  function drawCar(car, accel, v) {
     const k = 1.18 * s;
     const dir = car.flip < 0 ? -1 : 1;
     const bob = Math.sin(t * 13) * 0.8 * s * (0.6 + speed * 0.3);
     const boostAmt = Math.max(0, Math.min(1, (speed - 1.2) / 2));
+    const tilt = car.tilt + clamp(-accel * 0.012, -0.03, 0.03) * dir;
     ctx.save();
     ctx.translate(car.x, G.lane + bob);
-    ctx.rotate(car.tilt + clamp(-accel * 0.012, -0.03, 0.03) * dir);
+    ctx.rotate(tilt);
     ctx.scale(car.flip * k, k);
     ctx.translate(-215, 0);
     // light trails
@@ -510,6 +511,8 @@
       glow(C.pink, 20); ctx.fillStyle = fg;
       ctx.beginPath(); ctx.moveTo(6, -50); ctx.lineTo(4 - fl, -46); ctx.lineTo(6, -42); ctx.closePath(); ctx.fill(); noGlow();
     }
+    // the 3D model (car3d.js) draws the body when it's loaded; trails, beam and underglow stay here
+    if (window.car3d?.frame({ x: car.x, y: G.lane + bob, flip: car.flip, tilt, k, spin, a: v.a, b: v.b, mix: v.mix, sunX: v.sunX })) { ctx.restore(); return; }
     // body
     const bgd = ctx.createLinearGradient(0, -116, 0, -38);
     bgd.addColorStop(0, '#173038'); bgd.addColorStop(1, '#05090b');
@@ -588,7 +591,7 @@
       drawRamp(THEMES[v.a], trans.R);
       ctx.restore();
     }
-    drawCar(v.car, accel);
+    drawCar(v.car, accel, v);
     drawRain();
   }
 
@@ -685,6 +688,7 @@
       return { x: sunXFor(facingOf(i)), y: G.sunY, r: G.sunR, rgb: `${n >> 16} ${(n >> 8) & 255} ${n & 255}` };
     },
     boost(seconds = 2.5) { pulse = seconds; start(); },
+    redraw() { if (!running) draw(); },
     set(i) {
       if (!THEMES[i]) return;
       land(); stop = i; prune();
