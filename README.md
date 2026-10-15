@@ -15,8 +15,7 @@ python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-Open it through a server rather than `file://` — the icon sprite (`assets/models/        cyberpunk-car.glb (~1 MB) and skyline.glb (~1.6 MB), optimised copies of the originals
-assets/icons.svg`) is loaded with `<use href>`,
+Open it through a server rather than `file://` — the icon sprite (`assets/icons.svg`) is loaded with `<use href>`,
 which browsers block on `file://`.
 
 ## Structure
@@ -31,6 +30,7 @@ js/city3d.js          renders each district's skyline strips from 3D towers once
 js/drive.js           district controller: wheel / swipe / keys / links → drives, panel-first scrolling, minimap, URL hash
 js/main.js            boot sequence, terminal commands, command palette, filters, contact form
 js/motion.js          panel entrances, git log fill, card tilt
+assets/models/        cyberpunk-car.glb (22 MB) and skyline.glb (10 MB), the original files at full resolution
 assets/icons.svg      logo sprite built from Simple Icons
 assets/og.png         social preview image
 tools/build-icons.py  rebuilds the sprite — add a slug to SLUGS and re-run
@@ -60,10 +60,10 @@ don't get a stale cached copy.
 
 3D car: [“Cyberpunk car”](https://sketchfab.com/3d-models/cyberpunk-car-b4301ff99d214d16a7a43708a5866bf0) by
 [4d_Bob](https://sketchfab.com/3d_Bob), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-Textures resized and re-encoded for the web; geometry unchanged.
+Used unmodified.
 
 Skyline towers: [“Low Poly Night City Building Skyline”](https://sketchfab.com/3d-models/low-poly-night-city-building-skyline-b0035b8713b048bb8ddf311ee67c28c8)
 by [99.Miles](https://sketchfab.com/99.Miles), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-Optimised for the web (textures resized, clearcoat maps and spare UV sets removed); geometry unchanged.
+Used unmodified.
 
 Both credits also appear in the site footer and must stay there while the models are used.

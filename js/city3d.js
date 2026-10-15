@@ -3,11 +3,11 @@
 // stretched and spaced at random, lit by that district's sun, windows tinted its colour) into a flat image
 // that tiles seamlessly. scene.js scrolls those images exactly like its old drawn buildings, so the 3D costs
 // nothing per frame. If anything fails, the drawn buildings stay.
-// Model: "Low Poly Night City Building Skyline" by 99.Miles (Sketchfab), CC BY 4.0, optimised — credited in the footer.
+// Model: "Low Poly Night City Building Skyline" by 99.Miles (Sketchfab), CC BY 4.0, unmodified file — credited in the footer.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const MODEL = 'assets/models/skyline.glb?v=20261015g';
+const MODEL = 'assets/models/skyline.glb?v=20261015i';
 const root = document.documentElement;
 const weak = navigator.connection?.saveData === true
   || (navigator.deviceMemory !== undefined && navigator.deviceMemory <= 2)
@@ -24,14 +24,16 @@ async function main() {
   if (towers.length < 4) throw new Error('could not find the towers in the skyline model');
   const tallest = Math.max(...towers.map(t => t.height));
 
-  const baseMat = src.material;
-  baseMat.side = THREE.DoubleSide;     // the model has inward-facing faces: single-sided would leave holes
-  const mats = { far: baseMat.clone(), near: baseMat.clone() };
-
   const glCanvas = document.createElement('canvas');
   const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, alpha: true, antialias: true, preserveDrawingBuffer: true });
   renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  const baseMat = src.material;
+  const aniso = renderer.capabilities.getMaxAnisotropy();
+  for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'clearcoatMap', 'clearcoatNormalMap']) if (baseMat[k]) baseMat[k].anisotropy = aniso;
+  baseMat.side = THREE.DoubleSide;     // the model has inward-facing faces: single-sided would leave holes
+  const mats = { far: baseMat.clone(), near: baseMat.clone() };
+
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(0, 1, 0, -1, -5000, 5000);
   camera.position.z = 2500;

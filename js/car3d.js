@@ -2,11 +2,11 @@
 // puts its car. scene.js keeps the world, light trails, headlight beam and underglow, and hands this file
 // the car's position, heading, tilt and wheel travel every frame; this file draws the body, spins the
 // wheels and lights it in the colours of the district. If anything fails, the drawn 2D car stays.
-// Model: "Cyberpunk car" by 4d_Bob (Sketchfab), CC BY 4.0, textures resized — credited in the footer.
+// Model: "Cyberpunk car" by 4d_Bob (Sketchfab), CC BY 4.0, unmodified file — credited in the footer.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const MODEL = 'assets/models/cyberpunk-car.glb?v=20261015e';
+const MODEL = 'assets/models/cyberpunk-car.glb?v=20261015i';
 const LENGTH_2D = 434;        // the 2D car's length in its own units (scene.js draws it 434 long, pivot at 215)
 const GROUND_2D = 6;          // tyre bottom sits this far below the 2D pivot, in the same units
 const VIEW_YAW = .2;          // turn the nose a little toward the viewer: reads as 3D, not a cut-out
@@ -44,6 +44,8 @@ async function main() {
   const material = src.material;
   material.emissiveIntensity = Math.min(material.emissiveIntensity || 1, 4);
   material.envMapIntensity = .9;
+  const aniso = renderer.capabilities.getMaxAnisotropy();
+  for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap']) if (material[k]) material[k].anisotropy = aniso;
 
   // ------------------------------------------------------------------ split the wheels out of the single mesh
   const geo = src.geometry;
@@ -124,7 +126,7 @@ async function main() {
   function resize() {
     const r = base.getBoundingClientRect();
     W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, matchMedia('(pointer: coarse)').matches ? 1.5 : 4));
     renderer.setSize(W, H, false);
     camera.left = 0; camera.right = W; camera.top = 0; camera.bottom = -H;
     camera.updateProjectionMatrix();

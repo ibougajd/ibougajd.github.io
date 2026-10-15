@@ -232,7 +232,8 @@
     const rect = cv.getBoundingClientRect();
     W = Math.max(320, Math.round(rect.width));
     H = Math.max(320, Math.round(rect.height));
-    DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+    // desktop renders at the screen's full resolution (4K included); touch devices stay capped to keep them smooth
+    DPR = Math.min(window.devicePixelRatio || 1, matchMedia('(pointer: coarse)').matches ? 1.5 : 4);
     cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     s = Math.min(H / 1080, W / 1100) * 1.05;
