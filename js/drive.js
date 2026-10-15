@@ -1,5 +1,5 @@
 // Drive mode: the window never scrolls. Wheel, swipe, keys and links move the car between districts
-// (the stages). A district's panel scrolls first; only once it hits its edge does the car drive on.
+// (the stages). A district's text scrolls first; driving on takes a deliberate pull past its end.
 // One gesture = one district, so trackpad momentum can't fling you across the whole city.
 (() => {
   'use strict';
@@ -177,43 +177,115 @@
   }
   const inPanel = target => target instanceof Element && !!target.closest('.stage');
 
-  let gesture = { used: false, acc: 0 }, lastWheel = 0;
+  // Leaving a district is a deliberate pull past the end of its text, never a side effect of reading:
+  //  - a gesture that scrolled the text can't drive, even if it carries on past the end
+  //  - right after the text stops at its edge there's a short settle time before pulling counts
+  //  - then you keep scrolling ~3 wheel notches (or one firm swipe) while a meter fills; let go and it drains
+  const SETTLE = 450;                                   // ms the text must sit still at its edge
+  const pullMeter = $('#pull'), pullFill = $('#pull-fill'), pullLabel = $('#pull-label');
+  let pull = 0, pullDir = 0, pullTouched = 0, pullHold = 260, draining = false;
+  let settledAt = performance.now();                    // last time the open panel moved (or the district opened)
+  document.addEventListener('scroll', e => { if (e.target === scrollerOf(cur)) settledAt = performance.now(); }, { capture: true, passive: true });
+  document.addEventListener('stage:enter', () => { settledAt = performance.now(); setPull(0, 0); });
+
+  const nothingToRead = () => { const sc = scrollerOf(cur); return !sc || sc.scrollHeight <= sc.clientHeight + 2; };
+  const settled = (ms = SETTLE) => nothingToRead() || performance.now() - settledAt >= ms;
+
+  function setPull(dir, value) {
+    if (dir && !(cur + dir >= 0 && cur + dir <= last)) value = 0;   // no road that way
+    pull = Math.max(0, Math.min(1, value));
+    pullDir = pull ? dir : 0;
+    if (!pullMeter) return;
+    pullMeter.classList.toggle('is-on', pull > 0);
+    if (pull > 0) {
+      const to = cur + dir;
+      const verb = pullHold > 1000 && pull >= .5 ? 'swipe again' : 'keep scrolling';
+      pullLabel.textContent = dir > 0 ? `${verb} · ${pad(to)} // ${names[to]}` : `${verb} · back to ${pad(to)} // ${names[to]}`;
+      pullMeter.dataset.dir = dir > 0 ? 'down' : 'up';
+    }
+    pullFill.style.transform = `scaleX(${pull})`;
+  }
+  // pull drains back to empty once you stop pushing
+  function drain() {
+    if (draining) return;
+    draining = true;
+    let lastT = performance.now();
+    const tick = now => {
+      const dt = (now - lastT) / 1000; lastT = now;
+      if (now - pullTouched > pullHold && pull > 0) setPull(pullDir, pull - dt * 1.6);
+      if (pull > 0) requestAnimationFrame(tick); else draining = false;
+    };
+    requestAnimationFrame(tick);
+  }
+  function addPull(dir, amount) {
+    pullTouched = performance.now(); pullHold = 260;
+    setPull(dir, (pullDir === dir ? pull : 0) + amount);
+    if (pull >= 1) { setPull(0, 0); go(cur + dir); return true; }
+    drain();
+    return false;
+  }
+
+  let gesture = { used: false, read: false }, lastWheel = 0;
   addEventListener('wheel', e => {
     if (e.ctrlKey || blocked(e.target)) return;
     const dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1);
     if (!dy || Math.abs(dy) < Math.abs(e.deltaX)) return;
     const now = performance.now(), dir = Math.sign(dy);
-    if (now - lastWheel > 180) gesture = { used: false, acc: 0 };
+    if (now - lastWheel > 200) gesture = { used: false, read: false };
     lastWheel = now;
     // content first: let the panel (or a scroller inside it) take the wheel
-    if (scrollerFor(e.target, dir)) { gesture.used = true; return; }
+    if (scrollerFor(e.target, dir)) { gesture.read = true; setPull(0, 0); return; }
     e.preventDefault();
     const sc = scrollerOf(cur);
-    if (!inPanel(e.target) && sc && canScroll(sc, dir)) { sc.scrollTop += dy; gesture.used = true; return; }
+    if (!inPanel(e.target) && sc && canScroll(sc, dir)) { sc.scrollTop += dy; gesture.read = true; setPull(0, 0); return; }
     if (busy || now < lockUntil) { gesture.used = true; return; }
-    if (gesture.used) return;
-    if (Math.sign(gesture.acc) !== dir) gesture.acc = 0;
-    gesture.acc += dy;
-    if (Math.abs(gesture.acc) >= 40) { gesture.used = true; go(cur + dir); }
+    if (gesture.read) { settledAt = now; return; }   // still the reading flick: the settle time starts when it ends
+    if (gesture.used || !settled()) return;
+    // a short panel (or the start screen) has nothing to read, so one notch is enough there
+    const per = nothingToRead() ? 90 : 330;
+    if (addPull(dir, Math.min(Math.abs(dy), 160) / per)) gesture.used = true;
   }, { passive: false });
 
+  // Touch: a flick that ends at the bottom is too easy to repeat by accident, so at the end of the text
+  // the first swipe only half-fills the meter (it stays up a few seconds) and a second swipe drives on.
+  // On the road below the text there's nothing to read: one swipe drives.
   let touch = null;
   addEventListener('touchstart', e => {
-    if (e.touches.length !== 1 || blocked(e.target)) { touch = null; return; }
+    if (e.touches.length !== 1 || blocked(e.target) || busy) { touch = null; return; }
+    const p = e.touches[0], onText = inPanel(e.target);
+    const calm = settled(650);
+    if (onText && !calm) settledAt = performance.now();   // still flicking through the text: the pause starts over
+    const edge = dir => !onText || (!scrollerFor(e.target, dir) && calm);
+    touch = { x: p.clientX, y: p.clientY, onText, base: pull, baseDir: pullDir, 1: edge(1), '-1': edge(-1) };
+  }, { passive: true });
+  const touchTarget = (T, dir) => (T.baseDir === dir ? T.base : 0) + (T.onText ? .5 : 1);
+  addEventListener('touchmove', e => {
+    const T = touch;
+    if (!T) return;
     const p = e.touches[0];
-    // swipes on the panel only drive once the panel is already at that edge; swipes on the road always drive
-    const edge = dir => !inPanel(e.target) || !scrollerFor(e.target, dir);
-    touch = { x: p.clientX, y: p.clientY, t: performance.now(), next: edge(1), prev: edge(-1) };
+    const dx = p.clientX - T.x, dy = T.y - p.clientY, dir = dy > 0 ? 1 : -1;
+    if (!T[dir] || Math.abs(dy) < Math.abs(dx) * 1.3) return;
+    const from = T.baseDir === dir ? T.base : 0;
+    pullTouched = performance.now(); pullHold = 2500;
+    setPull(dir, from + (touchTarget(T, dir) - from) * Math.min(1, Math.max(0, Math.abs(dy) - 20) / 90));   // the meter follows your finger
   }, { passive: true });
   addEventListener('touchend', e => {
     const T = touch; touch = null;
-    if (!T || busy || performance.now() < lockUntil) return;
+    if (!T) return;
     const p = e.changedTouches[0];
-    const dx = p.clientX - T.x, dy = T.y - p.clientY;
-    if (Math.abs(dy) < 50 || Math.abs(dy) < Math.abs(dx) * 1.3 || performance.now() - T.t > 900) return;
-    const dir = dy > 0 ? 1 : -1;
-    if (dir > 0 ? T.next : T.prev) go(cur + dir);
+    const dx = p.clientX - T.x, dy = T.y - p.clientY, dir = dy > 0 ? 1 : -1;
+    const counts = T[dir] && Math.abs(dy) >= 60 && Math.abs(dy) >= Math.abs(dx) * 1.3;
+    if (!counts) {
+      if (T.onText) settledAt = performance.now();        // the pause is measured from when the finger lifts
+      setPull(T.baseDir, T.base); drain(); return;
+    }
+    const total = touchTarget(T, dir);
+    if (total >= 1 && !busy && performance.now() >= lockUntil) { setPull(0, 0); go(cur + dir); return; }
+    pullTouched = performance.now(); pullHold = 2500;      // half full: one more swipe drives on
+    setPull(dir, Math.min(total, .5));
+    drain();
   }, { passive: true });
+  addEventListener('touchcancel', () => { touch = null; drain(); }, { passive: true });
 
   addEventListener('keydown', e => {
     if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || blocked(e.target) || isTyping(e.target)) return;
@@ -235,7 +307,8 @@
       sc.scrollBy({ top: dir * (page ? sc.clientHeight * 0.85 : 90), behavior: reduce ? 'auto' : 'smooth' });
       return;
     }
-    if (!busy && !e.repeat) go(cur + dir);
+    // at the edge: two presses drive on (held keys never do)
+    if (!busy && !e.repeat && settled()) addPull(dir, nothingToRead() ? 1 : .55);
   });
 
   dcPrev?.addEventListener('click', () => go(cur - 1));

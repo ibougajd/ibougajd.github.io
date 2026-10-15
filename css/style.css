@@ -734,6 +734,22 @@ html:not(.drive) .stage-panel { width: 100%; }
 .dc-hint { display: block; font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); }
 @media (hover: none) and (pointer: coarse) { .dc-hint { font-size: 0; } .dc-hint::after { content: 'swipe to drive'; font-size: 9.5px; } }
 
+/* pull-to-drive meter: fills while you keep scrolling past the end of a district's text */
+.pull { display: none; }
+.drive .pull {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  position: fixed; left: 50%; bottom: 86px; z-index: 31; transform: translate(-50%, 8px);
+  padding: 8px 14px 10px; background: rgba(5, 9, 11, .82); border: 1px solid var(--line);
+  font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--bright); white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .25s var(--ease-out);
+}
+.drive .pull.is-on { opacity: 1; transform: translate(-50%, 0); }
+.drive .pull[data-dir="down"] .pull-label::before { content: '▾ '; color: var(--district); }
+.drive .pull[data-dir="up"] .pull-label::before { content: '▴ '; color: var(--district); }
+.pull-track { display: block; width: 180px; height: 3px; background: var(--faint); overflow: hidden; }
+.pull-fill { display: block; height: 100%; background: var(--district); box-shadow: 0 0 10px var(--district); transform-origin: 0 50%; transform: scaleX(0); }
+@media (max-width: 820px) { .drive .pull { left: var(--gutter); transform: translate(0, 8px); bottom: 70px; } .drive .pull.is-on { transform: none; } }
+
 /* minimap: the zigzag, start at the top */
 .drive .route { display: block; position: fixed; right: 26px; top: 50%; z-index: 40; width: 40px; height: 46vh; transform: translateY(-50%); }
 .route-map { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
