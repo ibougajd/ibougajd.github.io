@@ -15,7 +15,7 @@ python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-Open it through a server rather than `file://` — the icon sprite (`assets/models/        cyberpunk-car.glb — the car (textures resized to 1024px JPEG, ~1 MB)
+Open it through a server rather than `file://` — the icon sprite (`assets/models/        cyberpunk-car.glb (~1 MB) and skyline.glb (~1.6 MB), optimised copies of the originals
 assets/icons.svg`) is loaded with `<use href>`,
 which browsers block on `file://`.
 
@@ -27,6 +27,7 @@ index.html            all sections, each one a <section class="stage"> (a distri
 css/style.css         design tokens, HUD panels, layout; "DRIVE MODE" at the end is the fixed-window layout
 js/scene.js           the drive: per-district themes (THEMES), city, highway, ramps, car — canvas, no assets
 js/car3d.js           the car as a 3D model (three.js) drawn over the 2D drive; falls back to the drawn car
+js/city3d.js          renders each district's skyline strips from 3D towers once; falls back to the drawn buildings
 js/drive.js           district controller: wheel / swipe / keys / links → drives, panel-first scrolling, minimap, URL hash
 js/main.js            boot sequence, terminal commands, command palette, filters, contact form
 js/motion.js          panel entrances, git log fill, card tilt
@@ -59,5 +60,10 @@ don't get a stale cached copy.
 
 3D car: [“Cyberpunk car”](https://sketchfab.com/3d-models/cyberpunk-car-b4301ff99d214d16a7a43708a5866bf0) by
 [4d_Bob](https://sketchfab.com/3d_Bob), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-Textures resized and re-encoded for the web; geometry unchanged. The credit also appears in the site footer
-and must stay there while the model is used.
+Textures resized and re-encoded for the web; geometry unchanged.
+
+Skyline towers: [“Low Poly Night City Building Skyline”](https://sketchfab.com/3d-models/low-poly-night-city-building-skyline-b0035b8713b048bb8ddf311ee67c28c8)
+by [99.Miles](https://sketchfab.com/99.Miles), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+Optimised for the web (textures resized, clearcoat maps and spare UV sets removed); geometry unchanged.
+
+Both credits also appear in the site footer and must stay there while the models are used.

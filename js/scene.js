@@ -155,6 +155,15 @@
     const [minH, maxH] = far ? th.hFar : th.hNear;
     const base = far ? G.horizon : G.horizon + 4 * s;
     const tileW = Math.round((far ? 1600 : 1300) * Math.max(s, 0.5));
+    // real 3D towers (city3d.js) when they've loaded; the drawn buildings below otherwise
+    if (window.city3d) {
+      const top3 = Math.max(0, Math.floor(base - H * maxH * 1.6 - 40 * k));
+      const ext = window.city3d.tile({ far, th, tileW, tileH: base - top3 + 2, ground: base - top3, minH: H * minH, maxH: H * maxH, dpr: DPR, sunSide: 1, seed });
+      if (ext) {
+        for (const sg of ext.signs) sg.y += top3;
+        return { canvas: ext.canvas, signs: ext.signs, w: tileW, top: top3, h: base - top3 + 2 };
+      }
+    }
     const top = Math.max(0, Math.floor(base - H * maxH - 40 * k));
     const [c, g] = offscreen(tileW, base - top + 2);
     g.translate(0, -top);
@@ -689,6 +698,7 @@
     },
     boost(seconds = 2.5) { pulse = seconds; start(); },
     redraw() { if (!running) draw(); },
+    rebuildCity() { cache.clear(); if (!running) draw(); prefetch(); },
     set(i) {
       if (!THEMES[i]) return;
       land(); stop = i; prune();
