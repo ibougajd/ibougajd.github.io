@@ -351,8 +351,6 @@
   });
 
   addEventListener('resize', () => setPos(cur));
-  // the background loads asynchronously (3D, or the 2D fallback): when it's ready, put it where we are
-  document.addEventListener('scene:ready', () => { window.scene?.set?.(cur); chrome(cur); });
 
   // ------------------------------------------------------------ start where the URL says
   cur = Math.max(0, indexOf(location.hash.slice(1)));

@@ -18,11 +18,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261015c">
+  <link rel="stylesheet" href="css/style.css?v=20261015b">
   <script>
     (function () {
       var d = document.documentElement, booted = null;
-      window.scene = null;   // the #scene canvas would otherwise show up as window.scene until the background loads
       d.classList.add('js', 'drive');
       try { booted = sessionStorage.getItem('booted'); } catch (e) {}
       var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -585,16 +584,10 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script type="importmap">
-    { "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    } }
-  </script>
-  <script type="module" src="js/scene3d.js?v=20261015c"></script>
-  <script src="js/main.js?v=20261015c" defer></script>
-  <script src="js/drive.js?v=20261015c" defer></script>
-  <script src="js/sunlight.js?v=20261015c" defer></script>
-  <script src="js/motion.js?v=20261015c" defer></script>
+  <script src="js/scene.js?v=20261015b" defer></script>
+  <script src="js/main.js?v=20261015b" defer></script>
+  <script src="js/drive.js?v=20261015b" defer></script>
+  <script src="js/sunlight.js?v=20261015b" defer></script>
+  <script src="js/motion.js?v=20261015b" defer></script>
 </body>
 </html>

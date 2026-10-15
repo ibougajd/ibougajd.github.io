@@ -24,9 +24,7 @@ which browsers block on `file://`.
 index.html            all sections, each one a <section class="stage"> (a district)
 404.html              terminal-style "command not found" page
 css/style.css         design tokens, HUD panels, layout; "DRIVE MODE" at the end is the fixed-window layout
-js/scene3d.js         picks the background: the 3D drive, or the 2D one on weak devices / ?lite
-js/world3d.js         the 3D drive (three.js, WebGL): city, wet road, ramps, car, projector arm — all code, no assets
-js/scene2d.js         the 2D drive (canvas), the fallback; per-district looks in its THEMES
+js/scene.js           the drive: per-district themes (THEMES), city, highway, ramps, car — canvas, no assets
 js/drive.js           district controller: wheel / swipe / keys / links → drives, panel-first scrolling, minimap, URL hash
 js/main.js            boot sequence, terminal commands, command palette, filters, contact form
 js/motion.js          panel entrances, git log fill, card tilt
@@ -43,10 +41,10 @@ tools/og.html         template for og.png (serve the site, screenshot at 1200×6
 - **Terminal commands** — the `COMMANDS` object in `js/main.js`.
 - **CV** — replace `assets/ilyass-bougajdi-cv.pdf`.
 - **Contact form** — posts to Formspree (`action` on `#mailer`).
-- **District look** — colors per district: the `THEMES` array in `js/world3d.js` (3D) and in `js/scene2d.js` (2D),
-  same order as the sections in `index.html`. Panel hover-light colors: `--lamp-a` / `--lamp-b` in `css/style.css`.
+- **District look** — colors, skyline height and neon sign words per district: the `THEMES` array in `js/scene.js`
+  (same order as the sections in `index.html`).
 
-Add `?lite` to the address to see the 2D version. Deep links work: `/#work`, `/#contact`, … start the drive in that district. With reduced motion the car parks and
+Deep links work: `/#work`, `/#contact`, … start the drive in that district. With reduced motion the car parks and
 districts switch instantly; without JavaScript the page falls back to a normal scrolling page.
 
 ## Deploy (GitHub Pages)

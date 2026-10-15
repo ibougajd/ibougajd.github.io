@@ -1,4 +1,3 @@
-// The 2D night drive: the fallback background (scene3d.js loads it when WebGL can't run or ?lite is set).
 // The whole site is one night drive. Every section is a district on a zigzag highway: even levels
 // run right, odd levels run left. Moving on, the car runs to the end of its level, U-turns down a
 // ramp to the next level and the camera follows it while the new district fades in. The window never
@@ -709,7 +708,4 @@
 
   resize();
   start();
-  // loaded as the fallback after the page is already running: join the district the visitor is in
-  if (window.drive) window.scene.set(window.drive.index);
-  document.dispatchEvent(new CustomEvent('scene:ready', { detail: { kind: '2d' } }));
 })();
