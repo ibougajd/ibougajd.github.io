@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const MODEL = 'assets/models/skyline.glb?v=20261015f';
+const MODEL = 'assets/models/skyline.glb?v=20261015g';
 const root = document.documentElement;
 const weak = navigator.connection?.saveData === true
   || (navigator.deviceMemory !== undefined && navigator.deviceMemory <= 2)
@@ -25,7 +25,7 @@ async function main() {
   const tallest = Math.max(...towers.map(t => t.height));
 
   const baseMat = src.material;
-  baseMat.side = THREE.FrontSide;
+  baseMat.side = THREE.DoubleSide;     // the model has inward-facing faces: single-sided would leave holes
   const mats = { far: baseMat.clone(), near: baseMat.clone() };
 
   const glCanvas = document.createElement('canvas');
@@ -69,11 +69,21 @@ async function main() {
     const unit = p.maxH / tallest;
     const signs = [];
     holder.clear();
+    // landmarks (the tallest towers) at most once per strip, and never the same tower twice within four
+    const ranked = towers.map((t, i) => i).sort((a, b) => towers[b].height - towers[a].height);
+    const landmarks = new Set(ranked.slice(0, 2));
+    let landmarkUsed = false;
+    const recent = [];
     let x = r() * 30;
     while (x < p.tileW) {
-      const t = towers[Math.floor(r() * towers.length)];
-      const stretch = .8 + r() * .5;
-      const sc = unit * (.85 + r() * .3);
+      let pick, tries = 0;
+      do { pick = Math.floor(r() * towers.length); tries++; }
+      while (tries < 30 && (recent.includes(pick) || (landmarks.has(pick) && landmarkUsed)));
+      if (landmarks.has(pick)) landmarkUsed = true;
+      recent.push(pick); if (recent.length > 4) recent.shift();
+      const t = towers[pick];
+      const stretch = .9 + r() * .2;
+      const sc = unit * (.8 + r() * .2);
       const yaw = (r() < .5 ? -1 : 1) * (.25 + r() * .45);
       const halfW = Math.max(t.w, t.d) * sc * .6;
       const depth = (r() - .5) * 400;
